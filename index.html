@@ -146,6 +146,27 @@ button{
   background:#fafafa;
 }
 
+.detail{
+  display:none;
+  margin-top:12px;
+  padding:14px;
+  background:#f3f5f7;
+  border-radius:12px;
+}
+
+.detailTitle{
+  font-weight:bold;
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+.smallButton{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  font-size:15px;
+}
+
 .win{
   font-weight:bold;
 }
@@ -333,7 +354,7 @@ button{
 <script>
 
 /* =========================
-   現在の試合データ
+   現在の試合
 ========================= */
 
 let me=0;
@@ -350,8 +371,6 @@ let maxLose=0;
 
 let waitingReason=false;
 
-
-/* 試合履歴 */
 let matchHistory=[];
 
 
@@ -394,7 +413,7 @@ function saveData(){
 
 
 /* =========================
-   データ復元
+   復元
 ========================= */
 
 function loadData(){
@@ -430,18 +449,16 @@ function loadData(){
 
     waitingReason=false;
 
-    update();
-
   }catch(e){
 
-    console.log("保存データを読み込めませんでした");
+    console.log("復元エラー");
 
   }
 
 }
 
 
-/* 名前を入力したら保存 */
+/* 名前変更も保存 */
 
 document.getElementById("meName")
 .addEventListener("input",saveData);
@@ -451,7 +468,7 @@ document.getElementById("oppName")
 
 
 /* =========================
-   点数
+   得点
 ========================= */
 
 function point(who){
@@ -525,7 +542,7 @@ function addReason(reason){
 
 
 /* =========================
-   ゲーム終了
+   ゲーム終了判定
 ========================= */
 
 function checkGame(){
@@ -543,9 +560,14 @@ function checkGame(){
 }
 
 
+/* =========================
+   ゲーム終了
+========================= */
+
 function endGame(){
 
-  let winner=me>opp?"自分":"相手";
+  let winner=
+    me>opp ? "自分" : "相手";
 
   games.push({
 
@@ -556,15 +578,12 @@ function endGame(){
 
   });
 
-  alert(
-    "第"+game+"ゲーム終了！\n"+
-    me+" - "+opp+"\n"+
-    winner+"のゲーム勝利"
-  );
+  let myWins=
+    games.filter(g=>g.winner==="自分").length;
 
-  /* 3ゲーム先取なら試合終了 */
-  let myWins=games.filter(g=>g.winner==="自分").length;
-  let oppWins=games.filter(g=>g.winner==="相手").length;
+  let oppWins=
+    games.filter(g=>g.winner==="相手").length;
+
 
   if(myWins>=3 || oppWins>=3){
 
@@ -573,6 +592,14 @@ function endGame(){
     return;
 
   }
+
+
+  alert(
+    "第"+game+"ゲーム終了！\n"+
+    me+" - "+opp+"\n"+
+    winner+"のゲーム勝利"
+  );
+
 
   game++;
 
@@ -611,7 +638,8 @@ function finishMatch(){
     games.filter(g=>g.winner==="相手").length;
 
   let matchWinner=
-    myWins>oppWins?"自分":"相手";
+    myWins>oppWins ? "自分" : "相手";
+
 
   let meName=
     document.getElementById("meName").value ||
@@ -621,8 +649,52 @@ function finishMatch(){
     document.getElementById("oppName").value ||
     "相手";
 
+
   let date=
     new Date().toLocaleString("ja-JP");
+
+
+  /*
+    詳細分析用データを作成
+  */
+
+  let allPoints=[];
+
+  games.forEach(g=>{
+
+    /*
+      過去バージョンではゲームごとの
+      詳細ポイントを保存していなかったため、
+      今後の試合から詳細データを記録する。
+    */
+
+  });
+
+
+  let reasonCount={};
+
+  reasons.forEach(r=>{
+
+    reasonCount[r]=(reasonCount[r]||0)+1;
+
+  });
+
+
+  let maxReasonCount=0;
+
+  Object.values(reasonCount).forEach(n=>{
+
+    if(n>maxReasonCount)
+      maxReasonCount=n;
+
+  });
+
+
+  let topReasons=
+    Object.entries(reasonCount)
+    .filter(([r,n])=>n===maxReasonCount)
+    .map(([r])=>r);
+
 
   matchHistory.unshift({
 
@@ -631,6 +703,12 @@ function finishMatch(){
     meName:meName,
 
     oppName:oppName,
+
+    myWins:myWins,
+
+    oppWins:oppWins,
+
+    winner:matchWinner,
 
     games:games.map(g=>({
 
@@ -641,9 +719,14 @@ function finishMatch(){
 
     })),
 
-    winner:matchWinner
+    reasons:reasonCount,
+
+    topReasons:topReasons,
+
+    totalReasons:reasons.length
 
   });
+
 
   alert(
     "試合終了！\n\n"+
@@ -651,11 +734,10 @@ function finishMatch(){
     " - "+oppWins+" "+oppName
   );
 
-  showMatchHistory();
 
-  saveData();
-
-  /* 次の試合を準備 */
+  /*
+    次の試合
+  */
 
   me=0;
   opp=0;
@@ -689,14 +771,10 @@ function undo(){
 
   if(points.length===0)return;
 
-  if(waitingReason){
+  document.getElementById("reasonArea").style.display=
+    "none";
 
-    document.getElementById("reasonArea").style.display=
-      "none";
-
-    waitingReason=false;
-
-  }
+  waitingReason=false;
 
   points.pop();
 
@@ -706,6 +784,7 @@ function undo(){
   streak=0;
   maxWin=0;
   maxLose=0;
+
 
   points.forEach(p=>{
 
@@ -728,6 +807,7 @@ function undo(){
     }
 
   });
+
 
   update();
 
@@ -759,9 +839,11 @@ function update(){
     p.me>=7 || p.opp>=7
   );
 
+
   let lateMe=late.filter(p=>
     p.who==="me"
   ).length;
+
 
   document.getElementById("lateRate").textContent=
 
@@ -804,6 +886,7 @@ function showReasons(){
 
   let el=document.getElementById("reasons");
 
+
   if(reasons.length===0){
 
     el.textContent="まだありません";
@@ -816,6 +899,7 @@ function showReasons(){
 
 
   let count={};
+
 
   reasons.forEach(r=>{
 
@@ -839,6 +923,7 @@ function showReasons(){
 
   let max=0;
   let top=[];
+
 
   Object.entries(count).forEach(([reason,num])=>{
 
@@ -909,6 +994,7 @@ function showAnalysis(){
       p.me>=7 || p.opp>=7
     );
 
+
     let rate=late.length
 
       ? Math.round(
@@ -962,6 +1048,7 @@ function showGames(){
 
   let el=document.getElementById("games");
 
+
   if(games.length===0){
 
     el.textContent="まだゲームがありません";
@@ -995,9 +1082,11 @@ function showMatchHistory(){
   let el=
     document.getElementById("matchHistory");
 
+
   if(matchHistory.length===0){
 
-    el.textContent="まだ試合履歴がありません";
+    el.textContent=
+      "まだ試合履歴がありません";
 
     return;
 
@@ -1013,28 +1102,202 @@ function showMatchHistory(){
         ? "🏆 勝利"
         : "❌ 敗北";
 
+
       let gameScores=
         m.games.map(g=>
           g.me+"-"+g.opp
         ).join(" / ");
 
+
       return `
 
         <div class="matchResult">
 
-          <b>${result}</b><br>
+          <div>
 
-          ${m.meName} vs ${m.oppName}<br>
+            <b>${result}</b>
 
-          ${gameScores}<br>
+          </div>
 
-          <small>${m.date}</small>
+          <div>
+
+            ${m.meName} vs ${m.oppName}
+
+          </div>
+
+          <div>
+
+            ${gameScores}
+
+          </div>
+
+          <small>
+            ${m.date}
+          </small>
+
+
+          <button
+            class="secondary smallButton"
+            onclick="toggleDetail(${index})">
+
+            📊 詳しく見る
+
+          </button>
+
+
+          <div
+            id="detail-${index}"
+            class="detail">
+
+            ${createDetail(m)}
+
+          </div>
 
         </div>
 
       `;
 
     }).join("");
+
+}
+
+
+/* =========================
+   詳細分析
+========================= */
+
+function createDetail(m){
+
+  let html="";
+
+
+  html+=`
+
+    <div class="detailTitle">
+      📊 試合詳細
+    </div>
+
+  `;
+
+
+  html+=`
+
+    <p>
+      <b>試合結果</b><br>
+      ${m.meName} ${m.myWins}
+      - ${m.oppWins} ${m.oppName}
+    </p>
+
+  `;
+
+
+  html+=`
+
+    <p>
+      <b>ゲームスコア</b><br>
+      ${m.games.map(g=>
+        "第"+g.game+"："+g.me+"-"+g.opp
+      ).join("<br>")}
+    </p>
+
+  `;
+
+
+  if(m.totalReasons>0){
+
+    html+=`
+
+      <p>
+        <b>❌ 失点理由</b><br>
+
+        ${Object.entries(m.reasons)
+          .map(([reason,num])=>
+            "・"+reason+"："+num+"回"
+          )
+          .join("<br>")}
+
+      </p>
+
+    `;
+
+
+    if(m.topReasons.length>0){
+
+      html+=`
+
+        <div class="challenge">
+
+          🎯 <b>この試合で多かった課題</b><br><br>
+
+          ${m.topReasons.join("・")}
+
+          <br><br>
+
+          <small>
+            ${m.topReasons.length===1
+              ?"最も多く記録された失点理由です。"
+              :"同じ回数で多かった失点理由です。"
+            }
+          </small>
+
+        </div>
+
+      `;
+
+    }
+
+  }else{
+
+    html+=`
+
+      <p>
+        ❌ 失点理由は記録されていません。
+      </p>
+
+    `;
+
+  }
+
+
+  html+=`
+
+    <p>
+      💡 <b>振り返り</b><br>
+      この試合のゲームスコアと
+      失点理由を見返して、
+      次の練習で意識するポイントを
+      考えてみましょう。
+    </p>
+
+  `;
+
+
+  return html;
+
+}
+
+
+/* =========================
+   詳細を開閉
+========================= */
+
+function toggleDetail(index){
+
+  let el=
+    document.getElementById(
+      "detail-"+index
+    );
+
+
+  if(el.style.display==="block"){
+
+    el.style.display="none";
+
+  }else{
+
+    el.style.display="block";
+
+  }
 
 }
 
@@ -1067,8 +1330,10 @@ function newMatch(){
 
   waitingReason=false;
 
+
   document.getElementById("reasonArea").style.display=
     "none";
+
 
   update();
 
