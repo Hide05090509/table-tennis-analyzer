@@ -137,6 +137,22 @@ button{
   color:#555;
   margin-top:8px;
 }
+
+.matchResult{
+  padding:14px;
+  border:1px solid #eee;
+  border-radius:12px;
+  margin-top:10px;
+  background:#fafafa;
+}
+
+.win{
+  font-weight:bold;
+}
+
+.loss{
+  font-weight:bold;
+}
 </style>
 </head>
 
@@ -296,6 +312,17 @@ button{
 </div>
 
 
+<div class="card">
+
+<h2>📚 試合履歴</h2>
+
+<div id="matchHistory">
+まだ試合履歴がありません
+</div>
+
+</div>
+
+
 <button class="secondary" onclick="newMatch()">
 新しい試合
 </button>
@@ -304,6 +331,10 @@ button{
 
 
 <script>
+
+/* =========================
+   現在の試合データ
+========================= */
 
 let me=0;
 let opp=0;
@@ -318,6 +349,10 @@ let maxWin=0;
 let maxLose=0;
 
 let waitingReason=false;
+
+
+/* 試合履歴 */
+let matchHistory=[];
 
 
 /* =========================
@@ -343,7 +378,7 @@ function saveData(){
     maxWin:maxWin,
     maxLose:maxLose,
 
-    waitingReason:waitingReason
+    matchHistory:matchHistory
 
   };
 
@@ -390,6 +425,8 @@ function loadData(){
     streak=data.streak || 0;
     maxWin=data.maxWin || 0;
     maxLose=data.maxLose || 0;
+
+    matchHistory=data.matchHistory || [];
 
     waitingReason=false;
 
@@ -447,6 +484,8 @@ function point(who){
 
   update();
 
+  saveData();
+
   if(who==="opp"){
 
     waitingReason=true;
@@ -454,13 +493,9 @@ function point(who){
     document.getElementById("reasonArea").style.display=
       "block";
 
-    saveData();
-
   }else{
 
     checkGame();
-
-    saveData();
 
   }
 
@@ -527,11 +562,106 @@ function endGame(){
     winner+"のゲーム勝利"
   );
 
+  /* 3ゲーム先取なら試合終了 */
+  let myWins=games.filter(g=>g.winner==="自分").length;
+  let oppWins=games.filter(g=>g.winner==="相手").length;
+
+  if(myWins>=3 || oppWins>=3){
+
+    finishMatch();
+
+    return;
+
+  }
+
   game++;
 
   me=0;
   opp=0;
 
+  points=[];
+  reasons=[];
+
+  streak=0;
+  maxWin=0;
+  maxLose=0;
+
+  waitingReason=false;
+
+  document.getElementById("reasonArea").style.display=
+    "none";
+
+  update();
+
+  saveData();
+
+}
+
+
+/* =========================
+   試合終了
+========================= */
+
+function finishMatch(){
+
+  let myWins=
+    games.filter(g=>g.winner==="自分").length;
+
+  let oppWins=
+    games.filter(g=>g.winner==="相手").length;
+
+  let matchWinner=
+    myWins>oppWins?"自分":"相手";
+
+  let meName=
+    document.getElementById("meName").value ||
+    "自分";
+
+  let oppName=
+    document.getElementById("oppName").value ||
+    "相手";
+
+  let date=
+    new Date().toLocaleString("ja-JP");
+
+  matchHistory.unshift({
+
+    date:date,
+
+    meName:meName,
+
+    oppName:oppName,
+
+    games:games.map(g=>({
+
+      game:g.game,
+      me:g.me,
+      opp:g.opp,
+      winner:g.winner
+
+    })),
+
+    winner:matchWinner
+
+  });
+
+  alert(
+    "試合終了！\n\n"+
+    meName+" "+myWins+
+    " - "+oppWins+" "+oppName
+  );
+
+  showMatchHistory();
+
+  saveData();
+
+  /* 次の試合を準備 */
+
+  me=0;
+  opp=0;
+  game=1;
+
+  games=[];
   points=[];
   reasons=[];
 
@@ -661,11 +791,13 @@ function update(){
 
   showGames();
 
+  showMatchHistory();
+
 }
 
 
 /* =========================
-   失点理由集計
+   失点理由
 ========================= */
 
 function showReasons(){
@@ -799,7 +931,7 @@ function showAnalysis(){
 
       ?"終盤の得点力が課題になる可能性があります。"
 
-      :"終盤でも得点できています."
+      :"終盤でも得点できています。"
 
     }
 
@@ -855,6 +987,59 @@ function showGames(){
 
 
 /* =========================
+   試合履歴
+========================= */
+
+function showMatchHistory(){
+
+  let el=
+    document.getElementById("matchHistory");
+
+  if(matchHistory.length===0){
+
+    el.textContent="まだ試合履歴がありません";
+
+    return;
+
+  }
+
+
+  el.innerHTML=
+
+    matchHistory.map((m,index)=>{
+
+      let result=
+        m.winner==="自分"
+        ? "🏆 勝利"
+        : "❌ 敗北";
+
+      let gameScores=
+        m.games.map(g=>
+          g.me+"-"+g.opp
+        ).join(" / ");
+
+      return `
+
+        <div class="matchResult">
+
+          <b>${result}</b><br>
+
+          ${m.meName} vs ${m.oppName}<br>
+
+          ${gameScores}<br>
+
+          <small>${m.date}</small>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* =========================
    新しい試合
 ========================= */
 
@@ -893,7 +1078,7 @@ function newMatch(){
 
 
 /* =========================
-   起動時に復元
+   起動
 ========================= */
 
 loadData();
