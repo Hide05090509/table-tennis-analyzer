@@ -4,44 +4,152 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>卓球試合分析</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#f3f5f7;font-family:-apple-system,BlinkMacSystemFont,sans-serif;color:#222}
-main{max-width:600px;margin:auto;padding:16px}
+
+body{
+  margin:0;
+  background:#f3f5f7;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  color:#222;
+}
+
+main{
+  max-width:600px;
+  margin:auto;
+  padding:16px;
+}
+
 h1{text-align:center}
-.card{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 3px 12px #0001}
-input{width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px;margin:6px 0 12px}
-.score{text-align:center;font-size:64px;font-weight:800;margin:15px}
-.buttons{display:flex;gap:10px}
-button{border:0;border-radius:12px;padding:16px;font-size:17px;font-weight:bold;flex:1}
-.me{background:#222;color:white}
-.opp{background:#ddd}
-.secondary{background:#eee;width:100%;margin-top:10px}
-.green{background:#e8f5e9;padding:14px;border-radius:12px;margin-top:12px}
-.yellow{background:#fff4ce;padding:14px;border-radius:12px;margin-top:12px}
-.history{line-height:1.8;max-height:220px;overflow:auto}
-.stat{display:flex;justify-content:space-between;border-bottom:1px solid #eee;padding:9px 0}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  margin:14px 0;
+  box-shadow:0 3px 12px #0001;
+}
+
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid #ccc;
+  border-radius:10px;
+  font-size:16px;
+  margin:6px 0 12px;
+}
+
+.score{
+  text-align:center;
+  font-size:64px;
+  font-weight:800;
+  margin:15px;
+}
+
+.buttons{
+  display:flex;
+  gap:10px;
+}
+
+button{
+  border:0;
+  border-radius:12px;
+  padding:16px;
+  font-size:17px;
+  font-weight:bold;
+  flex:1;
+}
+
+.me{
+  background:#222;
+  color:white;
+}
+
+.opp{
+  background:#ddd;
+}
+
+.secondary{
+  background:#eee;
+  width:100%;
+  margin-top:10px;
+}
+
+.reasonButtons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.reasonButtons button{
+  padding:12px;
+  font-size:14px;
+}
+
+.green{
+  background:#e8f5e9;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.yellow{
+  background:#fff4ce;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
+
+.history{
+  line-height:1.8;
+  max-height:220px;
+  overflow:auto;
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #eee;
+  padding:9px 0;
+}
+
+#reasonArea{
+  display:none;
+  margin-top:15px;
+  padding:14px;
+  background:#f7f7f7;
+  border-radius:12px;
+}
 </style>
 </head>
 
 <body>
+
 <main>
 
 <h1>🏓 卓球試合分析</h1>
 
 <div class="card">
 <h2>試合情報</h2>
+
 <label>自分</label>
 <input id="meName" placeholder="自分の名前">
+
 <label>相手</label>
 <input id="oppName" placeholder="相手の名前">
 </div>
 
+
 <div class="card">
+
 <h2 id="gameTitle">第1ゲーム</h2>
 
 <div class="score">
-<span id="meScore">0</span> - <span id="oppScore">0</span>
+<span id="meScore">0</span>
+-
+<span id="oppScore">0</span>
 </div>
 
 <div class="buttons">
@@ -50,75 +158,223 @@ button{border:0;border-radius:12px;padding:16px;font-size:17px;font-weight:bold;
 </div>
 
 <button class="secondary" onclick="undo()">↩ 1点戻す</button>
+
+<div id="reasonArea">
+
+<b>今回の失点理由は？</b>
+
+<div class="reasonButtons">
+
+<button onclick="addReason('サーブミス')">
+🏓 サーブミス
+</button>
+
+<button onclick="addReason('レシーブミス')">
+🔄 レシーブミス
+</button>
+
+<button onclick="addReason('攻撃ミス')">
+💥 攻撃ミス
+</button>
+
+<button onclick="addReason('守備ミス')">
+🛡️ 守備ミス
+</button>
+
+<button onclick="addReason('判断ミス')">
+🤔 判断ミス
+</button>
+
+<button onclick="addReason('その他')">
+❓ その他
+</button>
+
 </div>
 
+</div>
+
+</div>
+
+
 <div class="card">
+
 <h2>📈 点数遷移</h2>
-<div id="history" class="history">まだありません</div>
+
+<div id="history" class="history">
+まだありません
 </div>
 
+</div>
+
+
 <div class="card">
+
 <h2>📊 現在の分析</h2>
 
-<div class="stat"><span>自分の得点</span><b id="totalMe">0</b></div>
-<div class="stat"><span>相手の得点</span><b id="totalOpp">0</b></div>
-<div class="stat"><span>最大連続得点</span><b id="maxWin">0</b></div>
-<div class="stat"><span>最大連続失点</span><b id="maxLose">0</b></div>
-<div class="stat"><span>7点以降の得点率</span><b id="lateRate">-</b></div>
+<div class="stat">
+<span>自分の得点</span>
+<b id="totalMe">0</b>
+</div>
+
+<div class="stat">
+<span>相手の得点</span>
+<b id="totalOpp">0</b>
+</div>
+
+<div class="stat">
+<span>最大連続得点</span>
+<b id="maxWin">0</b>
+</div>
+
+<div class="stat">
+<span>最大連続失点</span>
+<b id="maxLose">0</b>
+</div>
+
+<div class="stat">
+<span>7点以降の得点率</span>
+<b id="lateRate">-</b>
+</div>
 
 <div id="analysis"></div>
+
 </div>
+
 
 <div class="card">
-<h2>🏆 ゲーム結果</h2>
-<div id="games">まだゲームがありません</div>
+
+<h2>❌ 失点理由</h2>
+
+<div id="reasons">
+まだありません
 </div>
 
-<button class="secondary" onclick="newMatch()">新しい試合</button>
+</div>
+
+
+<div class="card">
+
+<h2>🏆 ゲーム結果</h2>
+
+<div id="games">
+まだゲームがありません
+</div>
+
+</div>
+
+
+<button class="secondary" onclick="newMatch()">
+新しい試合
+</button>
 
 </main>
 
+
 <script>
+
 let me=0;
 let opp=0;
 let game=1;
+
 let games=[];
 let points=[];
+let reasons=[];
+
 let streak=0;
 let maxWin=0;
 let maxLose=0;
 
+let waitingReason=false;
+
+
+/* 点数 */
+
 function point(who){
+
+  if(waitingReason)return;
+
   if(who==="me"){
+
     me++;
     streak++;
-    if(streak>maxWin)maxWin=streak;
+
+    if(streak>maxWin)
+      maxWin=streak;
+
   }else{
+
     opp++;
     streak--;
-    if(Math.abs(streak)>maxLose)maxLose=Math.abs(streak);
+
+    if(Math.abs(streak)>maxLose)
+      maxLose=Math.abs(streak);
+
   }
 
-  points.push({who:who,me:me,opp:opp});
+  points.push({
+    who:who,
+    me:me,
+    opp:opp
+  });
+
   update();
 
-  if(isGameOver()){
-    setTimeout(endGame,300);
+  if(who==="opp"){
+
+    waitingReason=true;
+
+    document.getElementById("reasonArea").style.display="block";
+
+  }else{
+
+    checkGame();
+
   }
+
 }
 
-function isGameOver(){
-  return (me>=11 || opp>=11) && Math.abs(me-opp)>=2;
+
+/* 失点理由 */
+
+function addReason(reason){
+
+  reasons.push(reason);
+
+  document.getElementById("reasonArea").style.display="none";
+
+  waitingReason=false;
+
+  update();
+
+  checkGame();
+
 }
+
+
+/* ゲーム終了判定 */
+
+function checkGame(){
+
+  if((me>=11 || opp>=11) && Math.abs(me-opp)>=2){
+
+    setTimeout(endGame,300);
+
+  }
+
+}
+
 
 function endGame(){
+
   let winner=me>opp?"自分":"相手";
 
   games.push({
+
     game:game,
     me:me,
     opp:opp,
     winner:winner
+
   });
 
   alert(
@@ -128,41 +384,77 @@ function endGame(){
   );
 
   game++;
+
   me=0;
   opp=0;
+
   points=[];
+  reasons=[];
+
   streak=0;
   maxWin=0;
   maxLose=0;
 
+  waitingReason=false;
+
+  document.getElementById("reasonArea").style.display="none";
+
   update();
+
 }
 
+
+/* 1点戻す */
+
 function undo(){
+
   if(points.length===0)return;
+
+  if(waitingReason){
+
+    document.getElementById("reasonArea").style.display="none";
+
+    waitingReason=false;
+
+  }
 
   points.pop();
 
   me=0;
   opp=0;
+
   streak=0;
   maxWin=0;
   maxLose=0;
 
   points.forEach(p=>{
+
     if(p.who==="me"){
+
       me++;
       streak++;
-      if(streak>maxWin)maxWin=streak;
+
+      if(streak>maxWin)
+        maxWin=streak;
+
     }else{
+
       opp++;
       streak--;
-      if(Math.abs(streak)>maxLose)maxLose=Math.abs(streak);
+
+      if(Math.abs(streak)>maxLose)
+        maxLose=Math.abs(streak);
+
     }
+
   });
 
   update();
+
 }
+
+
+/* 画面更新 */
 
 function update(){
 
@@ -174,103 +466,227 @@ function update(){
 
   document.getElementById("totalMe").textContent=me;
   document.getElementById("totalOpp").textContent=opp;
+
   document.getElementById("maxWin").textContent=maxWin;
   document.getElementById("maxLose").textContent=maxLose;
 
-  let late=[];
-  points.forEach(p=>{
-    if(p.me>=7 || p.opp>=7)late.push(p);
-  });
 
-  let lateMe=late.filter(p=>p.who==="me").length;
+  /* 終盤得点率 */
+
+  let late=points.filter(p=>
+    p.me>=7 || p.opp>=7
+  );
+
+  let lateMe=late.filter(p=>
+    p.who==="me"
+  ).length;
 
   document.getElementById("lateRate").textContent=
-    late.length ? Math.round(lateMe/late.length*100)+"%" : "-";
+
+    late.length
+    ? Math.round(lateMe/late.length*100)+"%"
+    : "-";
+
+
+  /* 点数履歴 */
 
   document.getElementById("history").innerHTML=
+
     points.length
+
     ? points.map((p,i)=>
-      (i+1)+". "+(p.who==="me"?"🟢":"🔴")+" "+
+
+      (i+1)+". "+
+      (p.who==="me"?"🟢":"🔴")+" "+
       p.me+" - "+p.opp
+
     ).join("<br>")
+
     : "まだありません";
 
+
+  showReasons();
+
   showAnalysis();
+
   showGames();
+
 }
+
+
+/* 失点理由表示 */
+
+function showReasons(){
+
+  let el=document.getElementById("reasons");
+
+  if(reasons.length===0){
+
+    el.textContent="まだありません";
+    return;
+
+  }
+
+  let count={};
+
+  reasons.forEach(r=>{
+
+    count[r]=(count[r]||0)+1;
+
+  });
+
+  el.innerHTML=
+
+    Object.entries(count)
+
+    .map(([reason,num])=>
+      "・"+reason+"：<b>"+num+"回</b>"
+    )
+
+    .join("<br>");
+
+}
+
+
+/* 分析 */
 
 function showAnalysis(){
 
   let html="";
 
   if(maxLose>=3){
+
     html+=`
+
     <div class="yellow">
+
     ⚠️ <b>連続失点に注意</b><br>
+
     最大${maxLose}点連続で失点しています。<br>
-    その場面で何が起きたか振り返ってみましょう。
-    </div>`;
+
+    その場面を振り返ってみましょう。
+
+    </div>
+
+    `;
+
   }
+
 
   if(me>=7 && opp>=7){
-    let rate=0;
-    let late=points.filter(p=>p.me>=7||p.opp>=7);
-    if(late.length){
-      rate=Math.round(
-        late.filter(p=>p.who==="me").length/late.length*100
-      );
-    }
+
+    let late=points.filter(p=>
+      p.me>=7 || p.opp>=7
+    );
+
+    let rate=late.length
+
+      ? Math.round(
+        late.filter(p=>p.who==="me").length
+        /late.length*100
+      )
+
+      : 0;
+
 
     html+=`
+
     <div class="${rate<50?'yellow':'green'}">
+
     🎯 <b>終盤分析</b><br>
+
     7点以降の得点率：${rate}%<br>
+
     ${rate<50
+
       ?"終盤の得点力が課題になる可能性があります。"
-      :"終盤でも得点できています。"}
-    </div>`;
+
+      :"終盤でも得点できています。"
+
+    }
+
+    </div>
+
+    `;
+
   }
 
-  if(me===0&&opp===0){
+
+  if(me===0 && opp===0){
+
     html="<p>点数を入力すると分析します。</p>";
+
   }
+
 
   document.getElementById("analysis").innerHTML=html;
+
 }
+
+
+/* ゲーム結果 */
 
 function showGames(){
 
   let el=document.getElementById("games");
 
   if(games.length===0){
+
     el.textContent="まだゲームがありません";
     return;
+
   }
 
-  el.innerHTML=games.map(g=>
-    "第"+g.game+"ゲーム："+g.me+" - "+g.opp+
-    "　"+g.winner+"勝利"
-  ).join("<br>");
+  el.innerHTML=
+
+    games.map(g=>
+
+      "第"+g.game+"ゲーム："+
+
+      g.me+" - "+g.opp+
+
+      "　"+g.winner+"勝利"
+
+    ).join("<br>");
+
 }
+
+
+/* 新しい試合 */
 
 function newMatch(){
 
-  if(!confirm("現在の試合データを消して新しい試合を始めますか？"))
+  if(!confirm(
+    "現在の試合データを消して新しい試合を始めますか？"
+  ))
+
     return;
+
 
   me=0;
   opp=0;
+
   game=1;
+
   games=[];
   points=[];
+  reasons=[];
+
   streak=0;
   maxWin=0;
   maxLose=0;
 
+  waitingReason=false;
+
+  document.getElementById("reasonArea").style.display="none";
+
   update();
+
 }
 
+
 update();
+
 </script>
 
 </body>
