@@ -130,6 +130,13 @@ button{
   margin-top:12px;
   font-size:17px;
 }
+
+.saved{
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  margin-top:8px;
+}
 </style>
 </head>
 
@@ -140,6 +147,7 @@ button{
 <h1>🏓 卓球試合分析</h1>
 
 <div class="card">
+
 <h2>試合情報</h2>
 
 <label>自分</label>
@@ -147,6 +155,11 @@ button{
 
 <label>相手</label>
 <input id="oppName" placeholder="相手の名前">
+
+<div id="saved" class="saved">
+💾 自動保存されています
+</div>
+
 </div>
 
 
@@ -307,7 +320,102 @@ let maxLose=0;
 let waitingReason=false;
 
 
-/* 点数 */
+/* =========================
+   自動保存
+========================= */
+
+function saveData(){
+
+  const data={
+
+    meName:document.getElementById("meName").value,
+    oppName:document.getElementById("oppName").value,
+
+    me:me,
+    opp:opp,
+    game:game,
+
+    games:games,
+    points:points,
+    reasons:reasons,
+
+    streak:streak,
+    maxWin:maxWin,
+    maxLose:maxLose,
+
+    waitingReason:waitingReason
+
+  };
+
+  localStorage.setItem(
+    "tableTennisAnalyzer",
+    JSON.stringify(data)
+  );
+
+  document.getElementById("saved").textContent=
+    "💾 自動保存済み";
+
+}
+
+
+/* =========================
+   データ復元
+========================= */
+
+function loadData(){
+
+  const saved=
+    localStorage.getItem("tableTennisAnalyzer");
+
+  if(!saved)return;
+
+  try{
+
+    const data=JSON.parse(saved);
+
+    document.getElementById("meName").value=
+      data.meName || "";
+
+    document.getElementById("oppName").value=
+      data.oppName || "";
+
+    me=data.me || 0;
+    opp=data.opp || 0;
+    game=data.game || 1;
+
+    games=data.games || [];
+    points=data.points || [];
+    reasons=data.reasons || [];
+
+    streak=data.streak || 0;
+    maxWin=data.maxWin || 0;
+    maxLose=data.maxLose || 0;
+
+    waitingReason=false;
+
+    update();
+
+  }catch(e){
+
+    console.log("保存データを読み込めませんでした");
+
+  }
+
+}
+
+
+/* 名前を入力したら保存 */
+
+document.getElementById("meName")
+.addEventListener("input",saveData);
+
+document.getElementById("oppName")
+.addEventListener("input",saveData);
+
+
+/* =========================
+   点数
+========================= */
 
 function point(who){
 
@@ -343,24 +451,32 @@ function point(who){
 
     waitingReason=true;
 
-    document.getElementById("reasonArea").style.display="block";
+    document.getElementById("reasonArea").style.display=
+      "block";
+
+    saveData();
 
   }else{
 
     checkGame();
+
+    saveData();
 
   }
 
 }
 
 
-/* 失点理由 */
+/* =========================
+   失点理由
+========================= */
 
 function addReason(reason){
 
   reasons.push(reason);
 
-  document.getElementById("reasonArea").style.display="none";
+  document.getElementById("reasonArea").style.display=
+    "none";
 
   waitingReason=false;
 
@@ -368,10 +484,14 @@ function addReason(reason){
 
   checkGame();
 
+  saveData();
+
 }
 
 
-/* ゲーム終了 */
+/* =========================
+   ゲーム終了
+========================= */
 
 function checkGame(){
 
@@ -421,14 +541,19 @@ function endGame(){
 
   waitingReason=false;
 
-  document.getElementById("reasonArea").style.display="none";
+  document.getElementById("reasonArea").style.display=
+    "none";
 
   update();
+
+  saveData();
 
 }
 
 
-/* 1点戻す */
+/* =========================
+   1点戻す
+========================= */
 
 function undo(){
 
@@ -436,7 +561,8 @@ function undo(){
 
   if(waitingReason){
 
-    document.getElementById("reasonArea").style.display="none";
+    document.getElementById("reasonArea").style.display=
+      "none";
 
     waitingReason=false;
 
@@ -475,10 +601,14 @@ function undo(){
 
   update();
 
+  saveData();
+
 }
 
 
-/* 画面更新 */
+/* =========================
+   画面更新
+========================= */
 
 function update(){
 
@@ -534,7 +664,9 @@ function update(){
 }
 
 
-/* 失点理由の集計 */
+/* =========================
+   失点理由集計
+========================= */
 
 function showReasons(){
 
@@ -573,10 +705,7 @@ function showReasons(){
     .join("<br>");
 
 
-  /* 一番多い理由 */
-
   let max=0;
-
   let top=[];
 
   Object.entries(count).forEach(([reason,num])=>{
@@ -584,7 +713,6 @@ function showReasons(){
     if(num>max){
 
       max=num;
-
       top=[reason];
 
     }else if(num===max){
@@ -615,7 +743,9 @@ function showReasons(){
 }
 
 
-/* 分析 */
+/* =========================
+   分析
+========================= */
 
 function showAnalysis(){
 
@@ -669,7 +799,7 @@ function showAnalysis(){
 
       ?"終盤の得点力が課題になる可能性があります。"
 
-      :"終盤でも得点できています。"
+      :"終盤でも得点できています."
 
     }
 
@@ -692,7 +822,9 @@ function showAnalysis(){
 }
 
 
-/* ゲーム結果 */
+/* =========================
+   ゲーム結果
+========================= */
 
 function showGames(){
 
@@ -722,7 +854,9 @@ function showGames(){
 }
 
 
-/* 新しい試合 */
+/* =========================
+   新しい試合
+========================= */
 
 function newMatch(){
 
@@ -748,12 +882,21 @@ function newMatch(){
 
   waitingReason=false;
 
-  document.getElementById("reasonArea").style.display="none";
+  document.getElementById("reasonArea").style.display=
+    "none";
 
   update();
 
+  saveData();
+
 }
 
+
+/* =========================
+   起動時に復元
+========================= */
+
+loadData();
 
 update();
 
