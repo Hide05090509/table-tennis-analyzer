@@ -122,6 +122,14 @@ button{
   background:#f7f7f7;
   border-radius:12px;
 }
+
+.challenge{
+  background:#ffe5e5;
+  padding:16px;
+  border-radius:12px;
+  margin-top:12px;
+  font-size:17px;
+}
 </style>
 </head>
 
@@ -153,11 +161,21 @@ button{
 </div>
 
 <div class="buttons">
-<button class="me" onclick="point('me')">自分 +1</button>
-<button class="opp" onclick="point('opp')">相手 +1</button>
+
+<button class="me" onclick="point('me')">
+自分 +1
+</button>
+
+<button class="opp" onclick="point('opp')">
+相手 +1
+</button>
+
 </div>
 
-<button class="secondary" onclick="undo()">↩ 1点戻す</button>
+<button class="secondary" onclick="undo()">
+↩ 1点戻す
+</button>
+
 
 <div id="reasonArea">
 
@@ -248,6 +266,8 @@ button{
 <div id="reasons">
 まだありません
 </div>
+
+<div id="challenge"></div>
 
 </div>
 
@@ -351,11 +371,15 @@ function addReason(reason){
 }
 
 
-/* ゲーム終了判定 */
+/* ゲーム終了 */
 
 function checkGame(){
 
-  if((me>=11 || opp>=11) && Math.abs(me-opp)>=2){
+  if(
+    (me>=11 || opp>=11)
+    &&
+    Math.abs(me-opp)>=2
+  ){
 
     setTimeout(endGame,300);
 
@@ -471,8 +495,6 @@ function update(){
   document.getElementById("maxLose").textContent=maxLose;
 
 
-  /* 終盤得点率 */
-
   let late=points.filter(p=>
     p.me>=7 || p.opp>=7
   );
@@ -487,8 +509,6 @@ function update(){
     ? Math.round(lateMe/late.length*100)+"%"
     : "-";
 
-
-  /* 点数履歴 */
 
   document.getElementById("history").innerHTML=
 
@@ -514,7 +534,7 @@ function update(){
 }
 
 
-/* 失点理由表示 */
+/* 失点理由の集計 */
 
 function showReasons(){
 
@@ -523,9 +543,13 @@ function showReasons(){
   if(reasons.length===0){
 
     el.textContent="まだありません";
+
+    document.getElementById("challenge").innerHTML="";
+
     return;
 
   }
+
 
   let count={};
 
@@ -535,15 +559,58 @@ function showReasons(){
 
   });
 
+
   el.innerHTML=
 
     Object.entries(count)
 
     .map(([reason,num])=>
+
       "・"+reason+"：<b>"+num+"回</b>"
+
     )
 
     .join("<br>");
+
+
+  /* 一番多い理由 */
+
+  let max=0;
+
+  let top=[];
+
+  Object.entries(count).forEach(([reason,num])=>{
+
+    if(num>max){
+
+      max=num;
+
+      top=[reason];
+
+    }else if(num===max){
+
+      top.push(reason);
+
+    }
+
+  });
+
+
+  document.getElementById("challenge").innerHTML=
+
+    `<div class="challenge">
+
+    🎯 <b>今回の課題</b><br><br>
+
+    ${top.join("・")}
+
+    <br>
+
+    <small>
+    ${max}回の失点が記録されています。
+    </small>
+
+    </div>`;
 
 }
 
@@ -553,6 +620,7 @@ function showReasons(){
 function showAnalysis(){
 
   let html="";
+
 
   if(maxLose>=3){
 
@@ -633,9 +701,11 @@ function showGames(){
   if(games.length===0){
 
     el.textContent="まだゲームがありません";
+
     return;
 
   }
+
 
   el.innerHTML=
 
