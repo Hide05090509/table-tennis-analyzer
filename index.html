@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卓球試合分析</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f4f6f8;
+  color: #222;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+label {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.score {
+  text-align: center;
+  font-size: 64px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.my-button {
+  background: #222;
+  color: white;
+}
+
+.opponent-button {
+  background: #ddd;
+  color: #222;
+}
+
+.reset-button {
+  background: #eee;
+  color: #333;
+  margin-top: 12px;
+}
+
+.game-history {
+  line-height: 1.8;
+  word-break: break-all;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.warning {
+  background: #fff3cd;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.good {
+  background: #e8f5e9;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+
+.small {
+  color: #777;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🏓 卓球試合分析</h1>
+
+<div class="card">
+  <h2>試合情報</h2>
+
+  <label>自分の名前</label>
+  <input id="myName" placeholder="例：田中">
+
+  <label>相手の名前</label>
+  <input id="opponentName" placeholder="例：佐藤">
+</div>
+
+<div class="card">
+
+  <h2 id="matchTitle">スコア</h2>
+
+  <div class="score">
+    <span id="myScore">0</span>
+    -
+    <span id="opponentScore">0</span>
+  </div>
+
+  <div class="buttons">
+    <button class="my-button" onclick="addPoint('me')">
+      自分 +1
+    </button>
+
+    <button class="opponent-button" onclick="addPoint('opponent')">
+      相手 +1
+    </button>
+  </div>
+
+  <button class="reset-button" onclick="resetGame()">
+    ゲームをリセット
+  </button>
+
+</div>
+
+<div class="card">
+
+  <h2>📈 点数遷移</h2>
+
+  <div id="history" class="game-history">
+    まだ点数がありません
+  </div>
+
+</div>
+
+<div class="card">
+
+  <h2>📊 試合分析</h2>
+
+  <div class="stat">
+    <span>自分の得点</span>
+    <strong id="totalMe">0</strong>
+  </div>
+
+  <div class="stat">
+    <span>相手の得点</span>
+    <strong id="totalOpponent">0</strong>
+  </div>
+
+  <div class="stat">
+    <span>最大連続得点</span>
+    <strong id="maxWin">0</strong>
+  </div>
+
+  <div class="stat">
+    <span>最大連続失点</span>
+    <strong id="maxLose">0</strong>
+  </div>
+
+  <div id="analysis"></div>
+
+</div>
+
+</div>
+
+<script>
+
+let myScore = 0;
+let opponentScore = 0;
+
+let history = [];
+
+let currentStreak = 0;
+let maxWinStreak = 0;
+let maxLoseStreak = 0;
+
+function addPoint(player) {
+
+  if (player === "me") {
+    myScore++;
+    currentStreak++;
+
+    if (currentStreak > maxWinStreak) {
+      maxWinStreak = currentStreak;
+    }
+
+  } else {
+    opponentScore++;
+    currentStreak--;
+
+    if (Math.abs(currentStreak) > maxLoseStreak) {
+      maxLoseStreak = Math.abs(currentStreak);
+    }
+  }
+
+  history.push({
+    player: player,
+    myScore: myScore,
+    opponentScore: opponentScore
+  });
+
+  updateScreen();
+}
+
+function updateScreen() {
+
+  document.getElementById("myScore").textContent = myScore;
+  document.getElementById("opponentScore").textContent = opponentScore;
+
+  document.getElementById("totalMe").textContent = myScore;
+  document.getElementById("totalOpponent").textContent = opponentScore;
+
+  document.getElementById("maxWin").textContent = maxWinStreak;
+  document.getElementById("maxLose").textContent = maxLoseStreak;
+
+  const historyElement = document.getElementById("history");
+
+  if (history.length === 0) {
+    historyElement.textContent = "まだ点数がありません";
+  } else {
+
+    historyElement.innerHTML =
+      history.map((item, index) => {
+
+        const symbol =
+          item.player === "me" ? "🟢" : "🔴";
+
+        return `${index + 1}. ${symbol} ${item.myScore} - ${item.opponentScore}`;
+
+      }).join("<br>");
+  }
+
+  analyze();
+}
+
+function analyze() {
+
+  const total = myScore + opponentScore;
+
+  if (total === 0) {
+    document.getElementById("analysis").innerHTML =
+      "<p class='small'>点数を入力すると分析が始まります。</p>";
+    return;
+  }
+
+  const rate =
+    Math.round((myScore / total) * 100);
+
+  let message = "";
+
+  if (maxLoseStreak >= 3) {
+
+    message += `
+      <div class="warning">
+        <strong>⚠️ 課題の可能性</strong><br>
+        ${maxLoseStreak}点連続で失点しています。<br>
+        連続失点した場面を振り返ってみましょう。
+      </div>
+    `;
+
+  } else if (rate >= 50) {
+
+    message += `
+      <div class="good">
+        <strong>👍 現在の得点率</strong><br>
+        ${rate}%です。良い流れを維持できています。
+      </div>
+    `;
+
+  } else {
+
+    message += `
+      <div class="warning">
+        <strong>🔎 分析</strong><br>
+        現在の得点率は${rate}%です。<br>
+        失点した場面を確認して課題を探しましょう。
+      </div>
+    `;
+  }
+
+  document.getElementById("analysis").innerHTML = message;
+}
+
+function resetGame() {
+
+  myScore = 0;
+  opponentScore = 0;
+
+  history = [];
+
+  currentStreak = 0;
+  maxWinStreak = 0;
+  maxLoseStreak = 0;
+
+  updateScreen();
+}
+
+</script>
+
+</body>
+</html>
