@@ -353,6 +353,10 @@ button{
 
 <script>
 
+const STORAGE_KEY="tableTennisAnalyzer";
+const HISTORY_KEY="tableTennisMatchHistory";
+
+
 /* =========================
    現在の試合
 ========================= */
@@ -371,43 +375,90 @@ let maxLose=0;
 
 let waitingReason=false;
 
+
+/* =========================
+   試合履歴
+========================= */
+
 let matchHistory=[];
 
 
 /* =========================
-   自動保存
+   履歴専用保存
+========================= */
+
+function saveMatchHistory(){
+
+  try{
+
+    localStorage.setItem(
+      HISTORY_KEY,
+      JSON.stringify(matchHistory)
+    );
+
+  }catch(e){
+
+    console.log("履歴保存エラー",e);
+
+  }
+
+}
+
+
+/* =========================
+   現在の試合保存
 ========================= */
 
 function saveData(){
 
-  const data={
+  try{
 
-    meName:document.getElementById("meName").value,
-    oppName:document.getElementById("oppName").value,
+    const data={
 
-    me:me,
-    opp:opp,
-    game:game,
+      meName:document.getElementById("meName").value,
+      oppName:document.getElementById("oppName").value,
 
-    games:games,
-    points:points,
-    reasons:reasons,
+      me:me,
+      opp:opp,
+      game:game,
 
-    streak:streak,
-    maxWin:maxWin,
-    maxLose:maxLose,
+      games:games,
+      points:points,
+      reasons:reasons,
 
-    matchHistory:matchHistory
+      streak:streak,
+      maxWin:maxWin,
+      maxLose:maxLose
 
-  };
+    };
 
-  localStorage.setItem(
-    "tableTennisAnalyzer",
-    JSON.stringify(data)
-  );
 
-  document.getElementById("saved").textContent=
-    "💾 自動保存済み";
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(data)
+    );
+
+
+    document.getElementById("saved").textContent=
+      "💾 自動保存済み";
+
+  }catch(e){
+
+    console.log("現在試合保存エラー",e);
+
+  }
+
+}
+
+
+/* =========================
+   全データ保存
+========================= */
+
+function saveAll(){
+
+  saveData();
+  saveMatchHistory();
 
 }
 
@@ -418,47 +469,87 @@ function saveData(){
 
 function loadData(){
 
-  const saved=
-    localStorage.getItem("tableTennisAnalyzer");
-
-  if(!saved)return;
+  /* 現在の試合 */
 
   try{
 
-    const data=JSON.parse(saved);
+    const saved=
+      localStorage.getItem(STORAGE_KEY);
 
-    document.getElementById("meName").value=
-      data.meName || "";
+    if(saved){
 
-    document.getElementById("oppName").value=
-      data.oppName || "";
+      const data=JSON.parse(saved);
 
-    me=data.me || 0;
-    opp=data.opp || 0;
-    game=data.game || 1;
+      document.getElementById("meName").value=
+        data.meName || "";
 
-    games=data.games || [];
-    points=data.points || [];
-    reasons=data.reasons || [];
+      document.getElementById("oppName").value=
+        data.oppName || "";
 
-    streak=data.streak || 0;
-    maxWin=data.maxWin || 0;
-    maxLose=data.maxLose || 0;
+      me=Number(data.me)||0;
+      opp=Number(data.opp)||0;
+      game=Number(data.game)||1;
 
-    matchHistory=data.matchHistory || [];
+      games=Array.isArray(data.games)
+        ? data.games
+        : [];
 
-    waitingReason=false;
+      points=Array.isArray(data.points)
+        ? data.points
+        : [];
+
+      reasons=Array.isArray(data.reasons)
+        ? data.reasons
+        : [];
+
+      streak=Number(data.streak)||0;
+      maxWin=Number(data.maxWin)||0;
+      maxLose=Number(data.maxLose)||0;
+
+    }
 
   }catch(e){
 
-    console.log("復元エラー");
+    console.log("現在試合復元エラー",e);
 
   }
+
+
+  /* 試合履歴 */
+
+  try{
+
+    const historySaved=
+      localStorage.getItem(HISTORY_KEY);
+
+    if(historySaved){
+
+      const historyData=
+        JSON.parse(historySaved);
+
+      if(Array.isArray(historyData)){
+
+        matchHistory=historyData;
+
+      }
+
+    }
+
+  }catch(e){
+
+    console.log("履歴復元エラー",e);
+
+  }
+
+
+  waitingReason=false;
 
 }
 
 
-/* 名前変更も保存 */
+/* =========================
+   名前変更も保存
+========================= */
 
 document.getElementById("meName")
 .addEventListener("input",saveData);
@@ -474,6 +565,7 @@ document.getElementById("oppName")
 function point(who){
 
   if(waitingReason)return;
+
 
   if(who==="me"){
 
@@ -493,15 +585,20 @@ function point(who){
 
   }
 
+
   points.push({
+
     who:who,
     me:me,
-    opp:opp
+    opp:opp,
+    reason:null
+
   });
 
-  update();
 
+  update();
   saveData();
+
 
   if(who==="opp"){
 
@@ -525,17 +622,37 @@ function point(who){
 
 function addReason(reason){
 
+  if(!waitingReason)return;
+
+
   reasons.push(reason);
+
+
+  /* 最新の失点ポイントにも理由を記録 */
+
+  for(let i=points.length-1;i>=0;i--){
+
+    if(
+      points[i].who==="opp" &&
+      !points[i].reason
+    ){
+
+      points[i].reason=reason;
+      break;
+
+    }
+
+  }
+
 
   document.getElementById("reasonArea").style.display=
     "none";
 
   waitingReason=false;
 
+
   update();
-
   checkGame();
-
   saveData();
 
 }
@@ -569,14 +686,18 @@ function endGame(){
   let winner=
     me>opp ? "自分" : "相手";
 
+
   games.push({
 
     game:game,
     me:me,
     opp:opp,
-    winner:winner
+    winner:winner,
+
+    points:points.map(p=>({...p}))
 
   });
+
 
   let myWins=
     games.filter(g=>g.winner==="自分").length;
@@ -619,7 +740,6 @@ function endGame(){
     "none";
 
   update();
-
   saveData();
 
 }
@@ -636,6 +756,7 @@ function finishMatch(){
 
   let oppWins=
     games.filter(g=>g.winner==="相手").length;
+
 
   let matchWinner=
     myWins>oppWins ? "自分" : "相手";
@@ -654,24 +775,12 @@ function finishMatch(){
     new Date().toLocaleString("ja-JP");
 
 
-  /*
-    詳細分析用データを作成
-  */
-
-  let allPoints=[];
-
-  games.forEach(g=>{
-
-    /*
-      過去バージョンではゲームごとの
-      詳細ポイントを保存していなかったため、
-      今後の試合から詳細データを記録する。
-    */
-
-  });
-
+  /* =========================
+     失点理由集計
+  ========================= */
 
   let reasonCount={};
+
 
   reasons.forEach(r=>{
 
@@ -681,6 +790,7 @@ function finishMatch(){
 
 
   let maxReasonCount=0;
+
 
   Object.values(reasonCount).forEach(n=>{
 
@@ -696,7 +806,13 @@ function finishMatch(){
     .map(([r])=>r);
 
 
-  matchHistory.unshift({
+  /* =========================
+     履歴データ作成
+  ========================= */
+
+  const historyItem={
+
+    id:Date.now(),
 
     date:date,
 
@@ -710,22 +826,65 @@ function finishMatch(){
 
     winner:matchWinner,
 
+
     games:games.map(g=>({
 
       game:g.game,
       me:g.me,
       opp:g.opp,
-      winner:g.winner
+      winner:g.winner,
+
+      points:Array.isArray(g.points)
+        ? g.points.map(p=>({...p}))
+        : []
 
     })),
 
-    reasons:reasonCount,
 
-    topReasons:topReasons,
+    reasons:{...reasonCount},
+
+    topReasons:[...topReasons],
 
     totalReasons:reasons.length
 
-  });
+  };
+
+
+  /* =========================
+     履歴に追加
+  ========================= */
+
+  matchHistory.unshift(historyItem);
+
+
+  /*
+    ★ここが重要
+    試合履歴だけを独立して保存
+  */
+
+  saveMatchHistory();
+
+
+  /*
+    保存できたか確認する
+  */
+
+  try{
+
+    const check=
+      localStorage.getItem(HISTORY_KEY);
+
+    if(!check){
+
+      console.log("履歴保存を確認できませんでした");
+
+    }
+
+  }catch(e){
+
+    console.log("履歴確認エラー",e);
+
+  }
 
 
   alert(
@@ -735,9 +894,9 @@ function finishMatch(){
   );
 
 
-  /*
-    次の試合
-  */
+  /* =========================
+     次の試合
+  ========================= */
 
   me=0;
   opp=0;
@@ -756,9 +915,14 @@ function finishMatch(){
   document.getElementById("reasonArea").style.display=
     "none";
 
-  update();
 
-  saveData();
+  /*
+    現在の試合も保存
+  */
+
+  saveAll();
+
+  update();
 
 }
 
@@ -771,12 +935,43 @@ function undo(){
 
   if(points.length===0)return;
 
+
   document.getElementById("reasonArea").style.display=
     "none";
 
   waitingReason=false;
 
+
+  /* 戻すポイントを取得 */
+
+  const removed=
+    points[points.length-1];
+
+
+  /* 失点理由も削除 */
+
+  if(
+    removed &&
+    removed.who==="opp" &&
+    removed.reason
+  ){
+
+    const index=
+      reasons.lastIndexOf(removed.reason);
+
+    if(index!==-1){
+
+      reasons.splice(index,1);
+
+    }
+
+  }
+
+
   points.pop();
+
+
+  /* スコア再計算 */
 
   me=0;
   opp=0;
@@ -810,7 +1005,6 @@ function undo(){
 
 
   update();
-
   saveData();
 
 }
@@ -825,11 +1019,14 @@ function update(){
   document.getElementById("gameTitle").textContent=
     "第"+game+"ゲーム";
 
+
   document.getElementById("meScore").textContent=me;
   document.getElementById("oppScore").textContent=opp;
 
+
   document.getElementById("totalMe").textContent=me;
   document.getElementById("totalOpp").textContent=opp;
+
 
   document.getElementById("maxWin").textContent=maxWin;
   document.getElementById("maxLose").textContent=maxLose;
@@ -856,23 +1053,30 @@ function update(){
 
     points.length
 
-    ? points.map((p,i)=>
+    ? points.map((p,i)=>{
 
-      (i+1)+". "+
-      (p.who==="me"?"🟢":"🔴")+" "+
-      p.me+" - "+p.opp
+        let reasonText=
+          p.reason
+          ? "　("+p.reason+")"
+          : "";
 
-    ).join("<br>")
+        return (
+
+          (i+1)+". "+
+          (p.who==="me"?"🟢":"🔴")+" "+
+          p.me+" - "+p.opp+
+          reasonText
+
+        );
+
+      }).join("<br>")
 
     : "まだありません";
 
 
   showReasons();
-
   showAnalysis();
-
   showGames();
-
   showMatchHistory();
 
 }
@@ -916,9 +1120,7 @@ function showReasons(){
 
       "・"+reason+"：<b>"+num+"回</b>"
 
-    )
-
-    .join("<br>");
+    ).join("<br>");
 
 
   let max=0;
@@ -1203,6 +1405,62 @@ function createDetail(m){
   `;
 
 
+  /* ポイント詳細 */
+
+  let hasPoints=
+    m.games.some(g=>
+      Array.isArray(g.points) &&
+      g.points.length>0
+    );
+
+
+  if(hasPoints){
+
+    html+=`
+
+      <p>
+        <b>📈 点数遷移</b><br>
+
+        ${m.games.map(g=>{
+
+          if(
+            !Array.isArray(g.points) ||
+            g.points.length===0
+          ){
+
+            return "";
+
+          }
+
+
+          return `
+
+            <b>第${g.game}ゲーム</b><br>
+
+            ${g.points.map((p,i)=>
+
+              (i+1)+". "+
+              (p.who==="me"?"🟢":"🔴")+" "+
+              p.me+"-"+p.opp+
+              (p.reason
+                ? "　("+p.reason+")"
+                : "")
+
+            ).join("<br>")}
+
+            <br>
+
+          `;
+
+        }).join("")}
+
+      </p>
+
+    `;
+
+  }
+
+
   if(m.totalReasons>0){
 
     html+=`
@@ -1336,10 +1594,27 @@ function newMatch(){
 
 
   update();
-
   saveData();
 
 }
+
+
+/* =========================
+   ページを離れる直前にも保存
+========================= */
+
+window.addEventListener("pagehide",function(){
+
+  saveAll();
+
+});
+
+
+window.addEventListener("beforeunload",function(){
+
+  saveAll();
+
+});
 
 
 /* =========================
