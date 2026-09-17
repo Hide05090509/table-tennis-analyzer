@@ -3,16 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>卓球 試合分析</title>
+<title>卓球試合分析</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  padding:20px 14px 40px;
+  padding:20px 12px 40px;
   background:#f4f6f8;
   color:#222;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
@@ -25,58 +23,47 @@ body{
 
 h1{
   text-align:center;
-  font-size:26px;
   margin:5px 0 20px;
 }
 
 h2{
-  font-size:20px;
-  margin:0 0 15px;
-}
-
-h3{
-  margin-top:20px;
+  font-size:19px;
+  margin:0 0 14px;
 }
 
 .card{
-  background:white;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
+  background:#fff;
+  border-radius:15px;
+  padding:17px;
+  margin-bottom:15px;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 input{
   width:100%;
   padding:13px;
+  margin-bottom:9px;
   border:1px solid #ccc;
-  border-radius:10px;
+  border-radius:9px;
   font-size:16px;
-  margin-bottom:10px;
 }
 
 button{
   border:0;
-  border-radius:12px;
-  padding:13px 16px;
+  border-radius:10px;
+  padding:13px;
   font-size:16px;
-  cursor:pointer;
-}
-
-button:active{
-  transform:scale(.97);
 }
 
 .primary{
   width:100%;
   background:#222;
-  color:white;
+  color:#fff;
 }
 
 .score-area{
   display:flex;
   align-items:center;
-  justify-content:space-between;
   gap:10px;
 }
 
@@ -87,64 +74,37 @@ button:active{
 
 .player-name{
   font-weight:bold;
-  font-size:18px;
-  margin-bottom:5px;
+  font-size:17px;
 }
 
 .score{
-  font-size:64px;
+  font-size:60px;
   font-weight:bold;
-  line-height:1.1;
+  margin:5px 0;
 }
 
 .point-btn{
   width:100%;
-  margin-top:10px;
   background:#eee;
 }
 
 .undo{
   width:100%;
   margin-top:12px;
-  background:#f1f1f1;
+  background:#eee;
 }
 
 .game-info{
   text-align:center;
-  font-size:18px;
   font-weight:bold;
-  margin-bottom:12px;
+  font-size:18px;
+  margin-bottom:8px;
 }
 
-.game-score{
+.game-count{
   text-align:center;
-  font-size:15px;
   color:#666;
   margin-bottom:15px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-
-.stat{
-  background:#f5f5f5;
-  border-radius:12px;
-  padding:12px;
-  text-align:center;
-}
-
-.stat-title{
-  font-size:13px;
-  color:#666;
-}
-
-.stat-value{
-  font-size:22px;
-  font-weight:bold;
-  margin-top:4px;
 }
 
 .reason-buttons{
@@ -157,34 +117,55 @@ button:active{
   background:#eee;
 }
 
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.stat{
+  background:#f4f4f4;
+  border-radius:10px;
+  padding:12px;
+  text-align:center;
+}
+
+.stat-title{
+  color:#666;
+  font-size:13px;
+}
+
+.stat-value{
+  font-size:21px;
+  font-weight:bold;
+  margin-top:4px;
+}
+
 .hidden{
-  display:none !important;
+  display:none;
 }
 
 .notice{
   text-align:center;
-  padding:10px;
-  font-size:14px;
   color:#666;
+  font-size:13px;
+  margin-bottom:10px;
 }
 
 .history-item{
   border:1px solid #ddd;
-  border-radius:12px;
-  padding:14px;
+  border-radius:11px;
+  padding:13px;
   margin-bottom:10px;
-  background:white;
 }
 
-.history-header{
+.history-top{
   display:flex;
   justify-content:space-between;
-  gap:10px;
-  margin-bottom:8px;
 }
 
 .win{
-  color:#167c35;
+  color:#16833a;
   font-weight:bold;
 }
 
@@ -193,54 +174,59 @@ button:active{
   font-weight:bold;
 }
 
+.small{
+  color:#777;
+  font-size:13px;
+  margin-top:5px;
+}
+
 .detail{
   background:#f7f7f7;
-  border-radius:10px;
-  padding:12px;
+  border-radius:9px;
+  padding:10px;
   margin-top:10px;
 }
 
-.game-row{
+.row{
   display:flex;
   justify-content:space-between;
-  padding:7px 0;
+  padding:6px 0;
   border-bottom:1px solid #ddd;
 }
 
-.game-row:last-child{
+.row:last-child{
   border-bottom:0;
 }
 
-.small{
+.detail-btn{
+  width:100%;
+  margin-top:10px;
+  background:#eee;
+}
+
+.delete-btn{
+  margin-top:10px;
+  background:#eee;
   font-size:13px;
-  color:#666;
-  margin-top:4px;
+}
+
+.issue{
+  background:#fff8dc;
+  padding:12px;
+  border-radius:10px;
+  margin-top:12px;
 }
 
 .empty{
   text-align:center;
   color:#777;
-  padding:15px 0;
-}
-
-.reflection{
-  margin-top:12px;
-  padding:12px;
-  border-radius:10px;
-  background:#fff8df;
-}
-
-.delete-btn{
-  background:#eee;
-  font-size:13px;
-  padding:8px 10px;
-  margin-top:12px;
+  padding:15px;
 }
 
 .saved{
   text-align:center;
-  font-size:12px;
   color:#777;
+  font-size:12px;
   margin-top:8px;
 }
 </style>
@@ -260,7 +246,7 @@ button:active{
 
 <input id="oppName" placeholder="相手の名前">
 
-<button class="primary" onclick="startNewMatch()">
+<button class="primary" onclick="startMatch()">
 ▶ 試合開始
 </button>
 
@@ -277,7 +263,7 @@ button:active{
 第<span id="gameNumber">1</span>ゲーム
 </div>
 
-<div id="gameScore" class="game-score">
+<div id="gameCount" class="game-count">
 ゲームカウント 0 - 0
 </div>
 
@@ -285,28 +271,26 @@ button:active{
 
 <div class="player">
 
-<div id="meDisplayName" class="player-name">
+<div id="meDisplay" class="player-name">
 自分
 </div>
 
-<div id="myScore" class="score">
+<div id="meScore" class="score">
 0
 </div>
 
 <button class="point-btn"
-onclick="addPoint('me')">
+onclick="point('me')">
 ＋ 自分の得点
 </button>
 
 </div>
 
-<div style="font-size:22px;">
--
-</div>
+<div>−</div>
 
 <div class="player">
 
-<div id="oppDisplayName" class="player-name">
+<div id="oppDisplay" class="player-name">
 相手
 </div>
 
@@ -315,7 +299,7 @@ onclick="addPoint('me')">
 </div>
 
 <button class="point-btn"
-onclick="addPoint('opp')">
+onclick="point('opp')">
 ＋ 相手の得点
 </button>
 
@@ -341,32 +325,32 @@ onclick="addPoint('opp')">
 <div class="reason-buttons">
 
 <button class="reason-btn"
-onclick="selectReason('サーブミス')">
+onclick="reason('サーブミス')">
 サーブミス
 </button>
 
 <button class="reason-btn"
-onclick="selectReason('レシーブミス')">
+onclick="reason('レシーブミス')">
 レシーブミス
 </button>
 
 <button class="reason-btn"
-onclick="selectReason('攻撃ミス')">
+onclick="reason('攻撃ミス')">
 攻撃ミス
 </button>
 
 <button class="reason-btn"
-onclick="selectReason('守備ミス')">
+onclick="reason('守備ミス')">
 守備ミス
 </button>
 
 <button class="reason-btn"
-onclick="selectReason('判断ミス')">
+onclick="reason('判断ミス')">
 判断ミス
 </button>
 
 <button class="reason-btn"
-onclick="selectReason('その他')">
+onclick="reason('その他')">
 その他
 </button>
 
@@ -382,53 +366,37 @@ onclick="selectReason('その他')">
 <div class="stats">
 
 <div class="stat">
-<div class="stat-title">
-最大連続得点
-</div>
-<div id="maxWin" class="stat-value">
-0
-</div>
+<div class="stat-title">最大連続得点</div>
+<div id="maxWin">0</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-最大連続失点
-</div>
-<div id="maxLose" class="stat-value">
-0
-</div>
+<div class="stat-title">最大連続失点</div>
+<div id="maxLose">0</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-終盤得点率
-</div>
-<div id="endgameRate" class="stat-value">
--
-</div>
+<div class="stat-title">終盤得点率</div>
+<div id="lateRate">-</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-接戦判定
-</div>
-<div id="closeGame" class="stat-value">
--
-</div>
+<div class="stat-title">接戦</div>
+<div id="closeGame">-</div>
 </div>
 
 </div>
 
-<div id="currentIssue"></div>
+<div id="issue"></div>
 
 </div>
 
 
 <div class="card">
 
-<h2>📝 現在の失点理由</h2>
+<h2>📝 失点理由</h2>
 
-<div id="currentReasons">
+<div id="reasonList">
 まだ失点していません。
 </div>
 
@@ -442,7 +410,6 @@ onclick="selectReason('その他')">
 <h2>📚 試合履歴</h2>
 
 <div id="historyList">
-読み込み中...
 </div>
 
 </div>
@@ -452,1666 +419,1351 @@ onclick="selectReason('その他')">
 
 <script>
 
-/* =========================================
-   保存設定
-========================================= */
+var me = 0;
+var opp = 0;
 
-const CURRENT_KEY =
-"tableTennisAnalyzer";
+var game = 1;
 
-const HISTORY_KEY =
-"tableTennisMatchHistory";
+var games = [];
 
-const DB_NAME =
-"TableTennisAnalyzerDB";
+var points = [];
 
-const DB_VERSION = 1;
+var reasons = [];
 
-const STORE_NAME =
-"matches";
+var maxWin = 0;
+var maxLose = 0;
 
+var waitingReason = false;
 
-/* =========================================
-   試合データ
-========================================= */
+var matchStarted = false;
 
-let me = 0;
+var history = [];
 
-let opp = 0;
-
-let game = 1;
-
-let games = [];
-
-let points = [];
-
-let reasons = [];
-
-let streak = 0;
-
-let maxWin = 0;
-
-let maxLose = 0;
-
-let waitingReason = false;
-
-let currentMatchStarted = false;
-
-let matchHistory = [];
-
-let db = null;
+var STORAGE = "table_tennis_analyzer_v3";
 
 
-/* =========================================
-   IndexedDBを開く
-========================================= */
+/* =========================
+保存
+========================= */
 
-function openDB(){
+function save(){
 
-return new Promise((resolve,reject)=>{
+  try{
 
-try{
+    var data = {
+      meName:document.getElementById("meName").value,
+      oppName:document.getElementById("oppName").value,
+      me:me,
+      opp:opp,
+      game:game,
+      games:games,
+      points:points,
+      reasons:reasons,
+      maxWin:maxWin,
+      maxLose:maxLose,
+      matchStarted:matchStarted,
+      history:history
+    };
 
-if(!window.indexedDB){
+    localStorage.setItem(
+      STORAGE,
+      JSON.stringify(data)
+    );
 
-reject(
-new Error("IndexedDB unavailable")
-);
+    document.getElementById("saved").textContent =
+      "💾 自動保存済み";
 
-return;
+  }catch(e){
 
-}
+    console.log(e);
 
-const request =
-indexedDB.open(
-DB_NAME,
-DB_VERSION
-);
-
-request.onupgradeneeded =
-function(event){
-
-const database =
-event.target.result;
-
-if(
-!database.objectStoreNames
-.contains(STORE_NAME)
-){
-
-database.createObjectStore(
-STORE_NAME,
-{keyPath:"id"}
-);
-
-}
-
-};
-
-request.onsuccess =
-function(event){
-
-db = event.target.result;
-
-resolve(db);
-
-};
-
-request.onerror =
-function(){
-
-reject(request.error);
-
-};
-
-}catch(error){
-
-reject(error);
-
-}
-
-});
+  }
 
 }
 
 
-/* =========================================
-   IndexedDB履歴取得
-========================================= */
+/* =========================
+読み込み
+========================= */
 
-function getHistoryFromDB(){
+function load(){
 
-return new Promise((resolve,reject)=>{
+  try{
 
-if(!db){
+    var saved =
+      localStorage.getItem(STORAGE);
 
-reject(
-new Error("DB unavailable")
-);
+    if(saved){
 
-return;
+      var data =
+        JSON.parse(saved);
 
-}
+      document.getElementById("meName").value =
+        data.meName || "";
 
-try{
+      document.getElementById("oppName").value =
+        data.oppName || "";
 
-const transaction =
-db.transaction(
-STORE_NAME,
-"readonly"
-);
+      me =
+        Number(data.me) || 0;
 
-const store =
-transaction.objectStore(
-STORE_NAME
-);
+      opp =
+        Number(data.opp) || 0;
 
-const request =
-store.getAll();
+      game =
+        Number(data.game) || 1;
 
-request.onsuccess =
-function(){
+      games =
+        Array.isArray(data.games)
+        ? data.games
+        : [];
 
-const result =
-request.result || [];
+      points =
+        Array.isArray(data.points)
+        ? data.points
+        : [];
 
-result.sort(
-(a,b)=>Number(b.id)-Number(a.id)
-);
+      reasons =
+        Array.isArray(data.reasons)
+        ? data.reasons
+        : [];
 
-resolve(result);
+      maxWin =
+        Number(data.maxWin) || 0;
 
-};
+      maxLose =
+        Number(data.maxLose) || 0;
 
-request.onerror =
-function(){
+      matchStarted =
+        data.matchStarted === true;
 
-reject(request.error);
+      history =
+        Array.isArray(data.history)
+        ? data.history
+        : [];
 
-};
+    }
 
-}catch(error){
+  }catch(e){
 
-reject(error);
+    console.log(e);
 
-}
+    history=[];
 
-});
-
-}
+  }
 
 
-/* =========================================
-   IndexedDBに履歴保存
-========================================= */
+  renderHistory();
 
-function saveHistoryToDB(item){
+  if(matchStarted){
 
-return new Promise((resolve,reject)=>{
+    document
+      .getElementById("matchArea")
+      .classList
+      .remove("hidden");
 
-if(!db){
+  }
 
-reject(
-new Error("DB unavailable")
-);
-
-return;
-
-}
-
-try{
-
-const transaction =
-db.transaction(
-STORE_NAME,
-"readwrite"
-);
-
-const store =
-transaction.objectStore(
-STORE_NAME
-);
-
-store.put(item);
-
-transaction.oncomplete =
-function(){
-
-resolve();
-
-};
-
-transaction.onerror =
-function(){
-
-reject(transaction.error);
-
-};
-
-}catch(error){
-
-reject(error);
-
-}
-
-});
+  update();
 
 }
 
 
-/* =========================================
-   IndexedDB履歴削除
-========================================= */
+/* =========================
+試合開始
+========================= */
 
-function deleteHistoryFromDB(id){
+function startMatch(){
 
-return new Promise((resolve,reject)=>{
+  var myName =
+    document.getElementById("meName")
+    .value
+    .trim();
 
-if(!db){
+  var opponentName =
+    document.getElementById("oppName")
+    .value
+    .trim();
 
-reject(
-new Error("DB unavailable")
-);
+  if(!myName){
 
-return;
+    alert("自分の名前を入力してください");
 
-}
+    return;
 
-try{
+  }
 
-const transaction =
-db.transaction(
-STORE_NAME,
-"readwrite"
-);
+  if(!opponentName){
 
-const store =
-transaction.objectStore(
-STORE_NAME
-);
+    alert("相手の名前を入力してください");
 
-store.delete(id);
+    return;
 
-transaction.oncomplete =
-function(){
+  }
 
-resolve();
+  me=0;
+  opp=0;
+  game=1;
+  games=[];
+  points=[];
+  reasons=[];
+  maxWin=0;
+  maxLose=0;
+  waitingReason=false;
+  matchStarted=true;
 
-};
+  document
+    .getElementById("matchArea")
+    .classList
+    .remove("hidden");
 
-transaction.onerror =
-function(){
+  update();
 
-reject(transaction.error);
-
-};
-
-}catch(error){
-
-reject(error);
-
-}
-
-});
+  save();
 
 }
 
 
-/* =========================================
-   localStorageに現在の試合保存
-========================================= */
+/* =========================
+得点
+========================= */
 
-function saveCurrentData(){
+function point(player){
 
-try{
+  if(!matchStarted){
 
-const data = {
+    return;
 
-meName:
-document.getElementById("meName").value,
+  }
 
-oppName:
-document.getElementById("oppName").value,
+  if(waitingReason){
 
-me:me,
+    alert("先に失点理由を選択してください");
 
-opp:opp,
+    return;
 
-game:game,
-
-games:games,
-
-points:points,
-
-reasons:reasons,
-
-streak:streak,
-
-maxWin:maxWin,
-
-maxLose:maxLose,
-
-currentMatchStarted:
-currentMatchStarted
-
-};
-
-localStorage.setItem(
-CURRENT_KEY,
-JSON.stringify(data)
-);
-
-document.getElementById("saved")
-.textContent =
-"💾 自動保存済み";
-
-}catch(error){
-
-console.log(
-"現在データ保存エラー",
-error
-);
-
-}
-
-}
+  }
 
 
-/* =========================================
-   履歴をlocalStorageにも保存
-========================================= */
+  if(player==="me"){
 
-function saveHistoryBackup(){
+    me++;
 
-try{
+    points.push({
+      player:"me",
+      reason:null
+    });
 
-localStorage.setItem(
-HISTORY_KEY,
-JSON.stringify(matchHistory)
-);
+  }else{
 
-}catch(error){
+    opp++;
 
-console.log(
-"履歴バックアップ保存エラー",
-error
-);
+    points.push({
+      player:"opp",
+      reason:null
+    });
 
-}
+    waitingReason=true;
+
+    document
+      .getElementById("reasonArea")
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  calculateStats();
+
+  update();
+
+  save();
+
+
+  if(player==="me"){
+
+    checkEnd();
+
+  }
 
 }
 
 
-/* =========================================
-   localStorageから履歴
-========================================= */
+/* =========================
+失点理由
+========================= */
 
-function loadHistoryFromLocalStorage(){
+function reason(value){
 
-try{
+  if(!waitingReason){
 
-let data =
-localStorage.getItem(
-HISTORY_KEY
-);
+    return;
 
-if(!data){
+  }
 
-/*
-以前のバージョンの
-保存データも確認
-*/
+  var last =
+    points[points.length-1];
 
-data =
-localStorage.getItem(
-CURRENT_KEY
-);
+  if(last && last.player==="opp"){
 
-if(data){
+    last.reason=value;
 
-const parsed =
-JSON.parse(data);
+    reasons.push(value);
 
-if(
-Array.isArray(
-parsed.matchHistory
-)
-){
+  }
 
-matchHistory =
-parsed.matchHistory;
+  waitingReason=false;
 
-return;
+  document
+    .getElementById("reasonArea")
+    .classList
+    .add("hidden");
 
-}
+  calculateStats();
 
-}
+  update();
 
-return;
+  save();
 
-}
-
-const parsed =
-JSON.parse(data);
-
-if(Array.isArray(parsed)){
-
-matchHistory =
-parsed;
-
-}
-
-}catch(error){
-
-console.log(
-"履歴復元エラー",
-error
-);
-
-}
+  checkEnd();
 
 }
 
 
-/* =========================================
-   古い履歴をIndexedDBへ移行
-========================================= */
+/* =========================
+終了判定
+========================= */
 
-async function migrateHistory(){
+function checkEnd(){
 
-if(!Array.isArray(matchHistory)){
-return;
-}
+  if(
+    (me>=11 || opp>=11) &&
+    Math.abs(me-opp)>=2
+  ){
 
-if(matchHistory.length===0){
-return;
-}
+    finishGame();
 
-if(!db){
-return;
-}
-
-for(
-const item of matchHistory
-){
-
-try{
-
-if(!item.id){
-
-item.id =
-Date.now() +
-Math.floor(
-Math.random()*100000
-);
-
-}
-
-await saveHistoryToDB(item);
-
-}catch(error){
-
-console.log(
-"履歴移行エラー",
-error
-);
-
-}
-
-}
+  }
 
 }
 
 
-/* =========================================
-   起動時データ読み込み
-========================================= */
+/* =========================
+ゲーム終了
+========================= */
 
-async function loadData(){
+function finishGame(){
 
-/*
-最初にlocalStorageを読む。
+  var winner =
+    me>opp
+    ? "me"
+    : "opp";
 
-これを先にすることで、
-IndexedDBが使えない場合でも
-履歴が表示される。
-*/
+  games.push({
 
-loadHistoryFromLocalStorage();
+    game:game,
 
-renderHistory();
+    me:me,
+
+    opp:opp,
+
+    winner:winner,
+
+    points:points.map(
+      function(p){
+        return {
+          player:p.player,
+          reason:p.reason
+        };
+      }
+    )
+
+  });
 
 
-/*
-現在の試合を復元
-*/
+  var myWins =
+    games.filter(
+      function(g){
+        return g.winner==="me";
+      }
+    ).length;
 
-try{
 
-const saved =
-localStorage.getItem(
-CURRENT_KEY
-);
+  var oppWins =
+    games.filter(
+      function(g){
+        return g.winner==="opp";
+      }
+    ).length;
 
-if(saved){
 
-const data =
-JSON.parse(saved);
+  if(myWins>=3 || oppWins>=3){
 
-document.getElementById(
-"meName"
-).value =
-data.meName || "";
+    finishMatch();
 
-document.getElementById(
-"oppName"
-).value =
-data.oppName || "";
+    return;
 
-me =
-Number(data.me) || 0;
+  }
 
-opp =
-Number(data.opp) || 0;
 
-game =
-Number(data.game) || 1;
+  var finished =
+    game;
 
-games =
-Array.isArray(data.games)
-? data.games
-: [];
 
-points =
-Array.isArray(data.points)
-? data.points
-: [];
+  me=0;
+  opp=0;
+  points=[];
+  reasons=[];
+  maxWin=0;
+  maxLose=0;
+  waitingReason=false;
+  game++;
 
-reasons =
-Array.isArray(data.reasons)
-? data.reasons
-: [];
 
-streak =
-Number(data.streak) || 0;
+  update();
 
-maxWin =
-Number(data.maxWin) || 0;
+  save();
 
-maxLose =
-Number(data.maxLose) || 0;
 
-currentMatchStarted =
-Boolean(
-data.currentMatchStarted
-);
-
-}
-
-}catch(error){
-
-console.log(
-"現在試合復元エラー",
-error
-);
+  alert(
+    "第"+finished+"ゲーム終了！\n\n"+
+    "次は第"+game+"ゲームです。"
+  );
 
 }
 
 
-/*
-IndexedDBをバックグラウンドで
-読み込む。
-
-ここで失敗しても
-アプリは止めない。
-*/
-
-try{
-
-await openDB();
-
-const dbHistory =
-await getHistoryFromDB();
-
-if(
-Array.isArray(dbHistory) &&
-dbHistory.length>0
-){
-
-matchHistory =
-dbHistory;
-
-saveHistoryBackup();
-
-renderHistory();
-
-}else{
-
-/*
-IndexedDBが空なら
-localStorage履歴を移行
-*/
-
-await migrateHistory();
-
-}
-
-}catch(error){
-
-console.log(
-"IndexedDB使用不可:",
-error
-);
-
-/*
-何もしない。
-すでにlocalStorageの
-履歴が表示されている。
-*/
-
-}
-
-
-/*
-最後にUI更新
-*/
-
-if(currentMatchStarted){
-
-document.getElementById(
-"matchArea"
-).classList.remove(
-"hidden"
-);
-
-}
-
-updateUI();
-
-renderHistory();
-
-}
-
-
-/* =========================================
-   新しい試合
-========================================= */
-
-function startNewMatch(){
-
-const meName =
-document.getElementById(
-"meName"
-).value.trim();
-
-const oppName =
-document.getElementById(
-"oppName"
-).value.trim();
-
-if(!meName){
-
-alert(
-"自分の名前を入力してください"
-);
-
-return;
-
-}
-
-if(!oppName){
-
-alert(
-"相手の名前を入力してください"
-);
-
-return;
-
-}
-
-
-me=0;
-
-opp=0;
-
-game=1;
-
-games=[];
-
-points=[];
-
-reasons=[];
-
-streak=0;
-
-maxWin=0;
-
-maxLose=0;
-
-waitingReason=false;
-
-currentMatchStarted=true;
-
-
-document.getElementById(
-"matchArea"
-).classList.remove(
-"hidden"
-);
-
-updateUI();
-
-saveCurrentData();
-
-}
-
-
-/* =========================================
-   得点
-========================================= */
-
-function addPoint(player){
-
-if(!currentMatchStarted){
-return;
-}
-
-if(waitingReason){
-
-alert(
-"先に失点理由を選択してください"
-);
-
-return;
-
-}
-
-
-if(player==="me"){
-
-me++;
-
-if(streak<0){
-
-streak=1;
-
-}else{
-
-streak++;
-
-}
-
-maxWin =
-Math.max(
-maxWin,
-streak
-);
-
-points.push({
-
-player:"me",
-
-reason:null
-
-});
-
-}else{
-
-opp++;
-
-if(streak>0){
-
-streak=-1;
-
-}else{
-
-streak--;
-
-}
-
-maxLose =
-Math.max(
-maxLose,
-Math.abs(streak)
-);
-
-points.push({
-
-player:"opp",
-
-reason:null
-
-});
-
-waitingReason=true;
-
-document.getElementById(
-"reasonArea"
-).classList.remove(
-"hidden"
-);
-
-}
-
-
-updateUI();
-
-saveCurrentData();
-
-
-/*
-自分の得点なら
-すぐゲーム終了判定
-相手得点なら
-理由入力後に判定
-*/
-
-if(player==="me"){
-
-checkGameEnd();
-
-}
-
-}
-
-
-/* =========================================
-   失点理由
-========================================= */
-
-function selectReason(reason){
-
-if(!waitingReason){
-return;
-}
-
-const last =
-points[points.length-1];
-
-if(
-last &&
-last.player==="opp"
-){
-
-last.reason=reason;
-
-reasons.push(reason);
-
-}
-
-waitingReason=false;
-
-document.getElementById(
-"reasonArea"
-).classList.add(
-"hidden"
-);
-
-updateUI();
-
-saveCurrentData();
-
-checkGameEnd();
-
-}
-
-
-/* =========================================
-   ゲーム終了判定
-========================================= */
-
-function checkGameEnd(){
-
-if(
-(me>=11 || opp>=11) &&
-Math.abs(me-opp)>=2
-){
-
-endGame();
-
-}
-
-}
-
-
-/* =========================================
-   ゲーム終了
-========================================= */
-
-function endGame(){
-
-const winner =
-me>opp
-? "me"
-: "opp";
-
-
-games.push({
-
-game:game,
-
-me:me,
-
-opp:opp,
-
-winner:winner,
-
-points:
-points.map(
-p=>({...p})
-)
-
-});
-
-
-const myWins =
-games.filter(
-g=>g.winner==="me"
-).length;
-
-const oppWins =
-games.filter(
-g=>g.winner==="opp"
-).length;
-
-
-/*
-3ゲーム先取
-*/
-
-if(
-myWins>=3 ||
-oppWins>=3
-){
-
-finishMatch();
-
-return;
-
-}
-
-
-/*
-次のゲーム
-*/
-
-const finishedGame =
-game;
-
-me=0;
-
-opp=0;
-
-game++;
-
-points=[];
-
-reasons=[];
-
-streak=0;
-
-maxWin=0;
-
-maxLose=0;
-
-waitingReason=false;
-
-updateUI();
-
-saveCurrentData();
-
-alert(
-`第${finishedGame}ゲーム終了！\n\n` +
-`次は第${game}ゲームです。`
-);
-
-}
-
-
-/* =========================================
-   試合終了
-========================================= */
-
-async function finishMatch(){
-
-const meName =
-document.getElementById(
-"meName"
-).value.trim();
-
-const oppName =
-document.getElementById(
-"oppName"
-).value.trim();
-
-
-const myWins =
-games.filter(
-g=>g.winner==="me"
-).length;
-
-const oppWins =
-games.filter(
-g=>g.winner==="opp"
-).length;
-
-
-const winner =
-myWins>oppWins
-? "me"
-: "opp";
-
-
-/*
-失点理由集計
-*/
-
-const reasonCount={};
-
-games.forEach(g=>{
-
-if(!Array.isArray(g.points)){
-return;
-}
-
-g.points.forEach(p=>{
-
-if(
-p.player==="opp" &&
-p.reason
-){
-
-reasonCount[p.reason] =
-(reasonCount[p.reason] || 0) + 1;
-
-}
-
-});
-
-});
-
-
-const sorted =
-Object.entries(
-reasonCount
-).sort(
-(a,b)=>b[1]-a[1]
-);
-
-
-const highest =
-sorted.length
-? sorted[0][1]
-: 0;
-
-
-const topReasons =
-sorted
-.filter(
-([reason,count])=>
-count===highest
-)
-.map(
-([reason])=>reason
-);
-
-
-const item={
-
-id:
-Date.now() +
-Math.floor(
-Math.random()*1000
-),
-
-date:
-new Date().toLocaleString(
-"ja-JP"
-),
-
-meName:meName,
-
-oppName:oppName,
-
-myWins:myWins,
-
-oppWins:oppWins,
-
-winner:winner,
-
-games:
-games.map(
-g=>({
-
-game:g.game,
-
-me:g.me,
-
-opp:g.opp,
-
-winner:g.winner,
-
-points:
-Array.isArray(g.points)
-? g.points.map(
-p=>({...p})
-)
-:[]
-
-})
-),
-
-reasons:{
-...reasonCount
-},
-
-topReasons:
-topReasons,
-
-totalReasons:
-Object.values(reasonCount)
-.reduce(
-(a,b)=>a+b,
-0
-)
-
-};
-
-
-/*
-まず履歴をメモリに追加
-*/
-
-matchHistory.unshift(item);
-
-
-/*
-localStorageバックアップ
-*/
-
-saveHistoryBackup();
-
-
-/*
-IndexedDB保存を試す
-*/
-
-let dbSaved=false;
-
-try{
-
-if(!db){
-
-await openDB();
-
-}
-
-await saveHistoryToDB(item);
-
-dbSaved=true;
-
-}catch(error){
-
-console.log(
-"IndexedDB保存失敗:",
-error
-);
-
-}
-
-
-/*
-履歴表示
-*/
-
-renderHistory();
-
-
-/*
+/* =========================
 試合終了
-*/
+========================= */
 
-alert(
-`試合終了！\n\n` +
-`${meName} ${myWins} - ${oppWins} ${oppName}\n\n` +
-`試合履歴に保存しました。`
-);
+function finishMatch(){
 
+  var myName =
+    document.getElementById("meName")
+    .value
+    .trim();
 
-/*
-現在試合リセット
-*/
-
-me=0;
-
-opp=0;
-
-game=1;
-
-games=[];
-
-points=[];
-
-reasons=[];
-
-streak=0;
-
-maxWin=0;
-
-maxLose=0;
-
-waitingReason=false;
-
-currentMatchStarted=false;
+  var opponentName =
+    document.getElementById("oppName")
+    .value
+    .trim();
 
 
-document.getElementById(
-"matchArea"
-).classList.add(
-"hidden"
-);
+  var myWins =
+    games.filter(
+      function(g){
+        return g.winner==="me";
+      }
+    ).length;
 
 
-saveCurrentData();
+  var oppWins =
+    games.filter(
+      function(g){
+        return g.winner==="opp";
+      }
+    ).length;
+
+
+  var reasonCount={};
+
+
+  games.forEach(
+    function(g){
+
+      if(!Array.isArray(g.points)){
+        return;
+      }
+
+      g.points.forEach(
+        function(p){
+
+          if(
+            p.player==="opp" &&
+            p.reason
+          ){
+
+            reasonCount[p.reason] =
+              (reasonCount[p.reason] || 0)+1;
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  var sorted =
+    Object.keys(reasonCount)
+    .sort(
+      function(a,b){
+        return reasonCount[b]-reasonCount[a];
+      }
+    );
+
+
+  var top=[];
+
+  if(sorted.length){
+
+    var highest =
+      reasonCount[sorted[0]];
+
+    top =
+      sorted.filter(
+        function(r){
+          return reasonCount[r]===highest;
+        }
+      );
+
+  }
+
+
+  var item={
+
+    id:
+      Date.now(),
+
+    date:
+      new Date().toLocaleString("ja-JP"),
+
+    meName:myName,
+
+    oppName:opponentName,
+
+    myWins:myWins,
+
+    oppWins:oppWins,
+
+    winner:
+      myWins>oppWins
+      ? "me"
+      : "opp",
+
+    games:
+      JSON.parse(
+        JSON.stringify(games)
+      ),
+
+    reasons:reasonCount,
+
+    topReasons:top
+
+  };
+
+
+  history.unshift(item);
+
+
+  /*
+    履歴を保存
+  */
+
+  save();
+
+
+  renderHistory();
+
+
+  alert(
+    "試合終了！\n\n"+
+    myName+" "+myWins+
+    " - "+
+    oppWins+" "+
+    opponentName+
+    "\n\n"+
+    "📚 試合履歴に保存しました。"
+  );
+
+
+  me=0;
+  opp=0;
+  game=1;
+  games=[];
+  points=[];
+  reasons=[];
+  maxWin=0;
+  maxLose=0;
+  waitingReason=false;
+  matchStarted=false;
+
+
+  document
+    .getElementById("matchArea")
+    .classList
+    .add("hidden");
+
+
+  save();
 
 }
 
 
-/* =========================================
-   1点戻す
-========================================= */
+/* =========================
+1点戻す
+========================= */
 
 function undo(){
 
-if(points.length===0){
+  if(points.length===0){
 
-alert(
-"戻せる点がありません"
+    alert("戻せる点がありません");
+
+    return;
+
+  }
+
+
+  var last =
+    points.pop();
+
+
+  if(last.player==="me"){
+
+    me--;
+
+  }else{
+
+    opp--;
+
+    if(last.reason){
+
+      var index =
+        reasons.lastIndexOf(
+          last.reason
+        );
+
+      if(index!==-1){
+
+        reasons.splice(index,1);
+
+      }
+
+    }
+
+  }
+
+
+  waitingReason=false;
+
+  document
+    .getElementById("reasonArea")
+    .classList
+    .add("hidden");
+
+
+  calculateStats();
+
+  update();
+
+  save();
+
+}
+
+
+/* =========================
+統計
+========================= */
+
+function calculateStats(){
+
+  var win=0;
+  var lose=0;
+
+  maxWin=0;
+  maxLose=0;
+
+
+  points.forEach(
+    function(p){
+
+      if(p.player==="me"){
+
+        win++;
+        lose=0;
+
+        if(win>maxWin){
+          maxWin=win;
+        }
+
+      }else{
+
+        lose++;
+        win=0;
+
+        if(lose>maxLose){
+          maxLose=lose;
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================
+終盤得点率
+========================= */
+
+function lateRate(){
+
+  if(points.length===0){
+    return "-";
+  }
+
+  var my=0;
+  var op=0;
+  var total=0;
+  var mine=0;
+
+
+  points.forEach(
+    function(p){
+
+      if(p.player==="me"){
+        my++;
+      }else{
+        op++;
+      }
+
+      if(my>=7 || op>=7){
+
+        total++;
+
+        if(p.player==="me"){
+          mine++;
+        }
+
+      }
+
+    }
+  );
+
+
+  if(total===0){
+    return "-";
+  }
+
+
+  return Math.round(
+    mine/total*100
+  )+"%";
+
+}
+
+
+/* =========================
+接戦
+========================= */
+
+function closeGame(){
+
+  if(points.length===0){
+    return "-";
+  }
+
+  var my=0;
+  var op=0;
+  var total=0;
+  var close=0;
+
+
+  points.forEach(
+    function(p){
+
+      if(p.player==="me"){
+        my++;
+      }else{
+        op++;
+      }
+
+      if(my>=7 || op>=7){
+
+        total++;
+
+        if(Math.abs(my-op)<=2){
+          close++;
+        }
+
+      }
+
+    }
+  );
+
+
+  if(total===0){
+    return "-";
+  }
+
+
+  return close/total>=0.5
+    ? "接戦"
+    : "通常";
+
+}
+
+
+/* =========================
+画面更新
+========================= */
+
+function update(){
+
+  document.getElementById("meScore")
+    .textContent=me;
+
+  document.getElementById("oppScore")
+    .textContent=opp;
+
+  document.getElementById("gameNumber")
+    .textContent=game;
+
+
+  document.getElementById("meDisplay")
+    .textContent=
+    document.getElementById("meName").value
+    || "自分";
+
+
+  document.getElementById("oppDisplay")
+    .textContent=
+    document.getElementById("oppName").value
+    || "相手";
+
+
+  var myWins =
+    games.filter(
+      function(g){
+        return g.winner==="me";
+      }
+    ).length;
+
+
+  var oppWins =
+    games.filter(
+      function(g){
+        return g.winner==="opp";
+      }
+    ).length;
+
+
+  document.getElementById("gameCount")
+    .textContent=
+    "ゲームカウント "+
+    myWins+" - "+oppWins;
+
+
+  document.getElementById("maxWin")
+    .textContent=maxWin;
+
+  document.getElementById("maxLose")
+    .textContent=maxLose;
+
+  document.getElementById("lateRate")
+    .textContent=lateRate();
+
+  document.getElementById("closeGame")
+    .textContent=closeGame();
+
+
+  renderReasons();
+
+  renderIssue();
+
+}
+
+
+/* =========================
+失点理由表示
+========================= */
+
+function renderReasons(){
+
+  var element =
+    document.getElementById("reasonList");
+
+
+  if(reasons.length===0){
+
+    element.textContent=
+      "まだ失点していません。";
+
+    return;
+
+  }
+
+
+  var count={};
+
+
+  reasons.forEach(
+    function(r){
+
+      count[r]=
+        (count[r] || 0)+1;
+
+    }
+  );
+
+
+  var html="";
+
+
+  Object.keys(count)
+  .sort(
+    function(a,b){
+      return count[b]-count[a];
+    }
+  )
+  .forEach(
+    function(r){
+
+      html+=
+        '<div class="row">'+
+        '<span>'+escapeHTML(r)+'</span>'+
+        '<strong>'+count[r]+'回</strong>'+
+        '</div>';
+
+    }
+  );
+
+
+  element.innerHTML=html;
+
+}
+
+
+/* =========================
+課題
+========================= */
+
+function renderIssue(){
+
+  var element =
+    document.getElementById("issue");
+
+
+  if(reasons.length===0){
+
+    element.innerHTML="";
+
+    return;
+
+  }
+
+
+  var count={};
+
+
+  reasons.forEach(
+    function(r){
+
+      count[r]=
+        (count[r] || 0)+1;
+
+    }
+  );
+
+
+  var max=0;
+
+
+  Object.keys(count)
+  .forEach(
+    function(r){
+
+      if(count[r]>max){
+        max=count[r];
+      }
+
+    }
+  );
+
+
+  var top =
+    Object.keys(count)
+    .filter(
+      function(r){
+        return count[r]===max;
+      }
+    );
+
+
+  element.innerHTML=
+    '<div class="issue">'+
+    '<strong>🎯 今回の課題</strong>'+
+    '<p>'+
+    top.map(escapeHTML).join("・")+
+    'が'+max+
+    '回で最も多い失点理由です。'+
+    '</p>'+
+    '</div>';
+
+}
+
+
+/* =========================
+履歴
+========================= */
+
+function renderHistory(){
+
+  var element =
+    document.getElementById("historyList");
+
+
+  if(!Array.isArray(history) ||
+     history.length===0){
+
+    element.innerHTML=
+      '<div class="empty">'+
+      'まだ試合履歴がありません。'+
+      '</div>';
+
+    return;
+
+  }
+
+
+  var html="";
+
+
+  history.forEach(
+    function(item){
+
+      var result =
+        item.winner==="me"
+        ? "勝利"
+        : "敗北";
+
+      var cls =
+        item.winner==="me"
+        ? "win"
+        : "lose";
+
+
+      var gamesText="";
+
+
+      if(Array.isArray(item.games)){
+
+        gamesText =
+          item.games
+          .map(
+            function(g){
+              return g.me+"-"+g.opp;
+            }
+          )
+          .join(" / ");
+
+      }
+
+
+      html+=
+      '<div class="history-item">'+
+
+      '<div class="history-top">'+
+
+      '<div>'+
+      '<strong>'+
+      escapeHTML(item.meName)+
+      '</strong>'+
+      ' vs '+
+      '<strong>'+
+      escapeHTML(item.oppName)+
+      '</strong>'+
+      '</div>'+
+
+      '<div class="'+cls+'">'+
+      result+
+      '</div>'+
+
+      '</div>'+
+
+      '<div>'+
+      'ゲームカウント '+
+      item.myWins+
+      ' - '+
+      item.oppWins+
+      '</div>'+
+
+      '<div class="small">'+
+      escapeHTML(item.date)+
+      '</div>'+
+
+      '<div class="small">'+
+      'ゲーム：'+
+      escapeHTML(gamesText)+
+      '</div>'+
+
+      '<button class="detail-btn" '+
+      'onclick="toggleDetail('+item.id+')">'+
+      '📊 詳しく見る'+
+      '</button>'+
+
+      '<div id="detail'+item.id+'" '+
+      'class="detail hidden">'+
+
+      makeDetail(item)+
+
+      '</div>'+
+
+      '</div>';
+
+    }
+  );
+
+
+  element.innerHTML=html;
+
+}
+
+
+/* =========================
+詳細
+========================= */
+
+function makeDetail(item){
+
+  var html="";
+
+  html+=
+    "<h3>ゲーム結果</h3>";
+
+
+  if(
+    Array.isArray(item.games) &&
+    item.games.length
+  ){
+
+    item.games.forEach(
+      function(g){
+
+        html+=
+        '<div class="row">'+
+        '<span>第'+g.game+'ゲーム</span>'+
+        '<strong>'+
+        g.me+" - "+g.opp+
+        '</strong>'+
+        '</div>';
+
+      }
+    );
+
+  }
+
+
+  html+=
+    "<h3>失点理由</h3>";
+
+
+  var reasonsObj =
+    item.reasons || {};
+
+
+  var keys =
+    Object.keys(reasonsObj);
+
+
+  if(keys.length===0){
+
+    html+=
+      "<p>記録なし</p>";
+
+  }else{
+
+    keys.sort(
+      function(a,b){
+        return reasonsObj[b]-
+               reasonsObj[a];
+      }
+    );
+
+
+    keys.forEach(
+      function(r){
+
+        html+=
+        '<div class="row">'+
+        '<span>'+
+        escapeHTML(r)+
+        '</span>'+
+        '<strong>'+
+        reasonsObj[r]+"回"+
+        '</strong>'+
+        '</div>';
+
+      }
+    );
+
+  }
+
+
+  if(
+    Array.isArray(item.topReasons) &&
+    item.topReasons.length
+  ){
+
+    html+=
+      '<div class="issue">'+
+      '<strong>🎯 試合の課題</strong>'+
+      '<p>'+
+      item.topReasons
+      .map(escapeHTML)
+      .join("・")+
+      'が主な失点理由でした。</p>'+
+      '</div>';
+
+  }
+
+
+  html+=
+    '<button class="delete-btn" '+
+    'onclick="deleteHistory('+item.id+')">'+
+    '🗑 この試合を削除'+
+    '</button>';
+
+
+  return html;
+
+}
+
+
+/* =========================
+詳細開閉
+========================= */
+
+function toggleDetail(id){
+
+  var element =
+    document.getElementById(
+      "detail"+id
+    );
+
+  if(element){
+
+    element.classList.toggle(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================
+履歴削除
+========================= */
+
+function deleteHistory(id){
+
+  if(
+    !confirm(
+      "この試合履歴を削除しますか？"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  history =
+    history.filter(
+      function(item){
+        return Number(item.id)!==
+               Number(id);
+      }
+    );
+
+
+  save();
+
+  renderHistory();
+
+}
+
+
+/* =========================
+HTML安全処理
+========================= */
+
+function escapeHTML(value){
+
+  return String(value || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+名前変更時保存
+========================= */
+
+document.getElementById("meName")
+.addEventListener(
+  "input",
+  function(){
+    update();
+    save();
+  }
 );
 
-return;
 
-}
-
-
-const last =
-points.pop();
-
-
-if(last.player==="me"){
-
-me--;
-
-}else{
-
-opp--;
-
-if(last.reason){
-
-const index =
-reasons.lastIndexOf(
-last.reason
-);
-
-if(index!==-1){
-
-reasons.splice(
-index,
-1
-);
-
-}
-
-}
-
-}
-
-
-/*
-統計を再計算
-*/
-
-recomputeStats();
-
-waitingReason=false;
-
-document.getElementById(
-"reasonArea"
-).classList.add(
-"hidden"
-);
-
-updateUI();
-
-saveCurrentData();
-
-}
-
-
-/* =========================================
-   統計再計算
-========================================= */
-
-function recomputeStats(){
-
-let win=0;
-
-let lose=0;
-
-maxWin=0;
-
-maxLose=0;
-
-
-points.forEach(p=>{
-
-if(p.player==="me"){
-
-win++;
-
-lose=0;
-
-maxWin =
-Math.max(
-maxWin,
-win
-);
-
-}else{
-
-lose++;
-
-win=0;
-
-maxLose =
-Math.max(
-maxLose,
-lose
-);
-
-}
-
-});
-
-
-if(points.length===0){
-
-streak=0;
-
-return;
-
-}
-
-
-let count=0;
-
-const lastPlayer =
-points[
-points.length-1
-].player;
-
-
-for(
-let i=points.length-1;
-i>=0;
-i--
-){
-
-if(
-points[i].player===
-lastPlayer
-){
-
-count++;
-
-}else{
-
-break;
-
-}
-
-}
-
-
-streak =
-lastPlayer==="me"
-? count
-: -count;
-
-}
-
-
-/* =========================================
-   終盤得点率
-========================================= */
-
-function getEndgameRate(){
-
-if(points.length===0){
-return "-";
-}
-
-let my=0;
-
-let op=0;
-
-let total=0;
-
-let mine=0;
-
-
-points.forEach(p=>{
-
-if(p.player==="me"){
-my++;
-}else{
-op++;
-}
-
-if(my>=7 || op>=7){
-
-total++;
-
-if(p.player==="me"){
-mine++;
-}
-
-}
-
-});
-
-
-if(total===0){
-return "-";
-}
-
-
-return Math.round(
-mine/total*100
-)+"%";
-
-}
-
-
-/* =========================================
-   接戦
-========================================= */
-
-function getCloseGame(){
-
-if(points.length===0){
-return "-";
-}
-
-let my=0;
-
-let op=0;
-
-let late=0;
-
-let close=0;
-
-
-points.forEach(p=>{
-
-if(p.player==="me"){
-my++;
-}else{
-op++;
-}
-
-if(my>=7 || op>=7){
-
-late++;
-
-if(
-Math.abs(my-op)<=2
-){
-
-close++;
-
-}
-
-}
-
-});
-
-
-if(late===0){
-return "-";
-}
-
-
-return close/late>=0.5
-? "接戦"
-: "通常";
-
-}
-
-
-/* =========================================
-   UI更新
-========================================= */
-
-function updateUI(){
-
-document.getElementById(
-"myScore"
-).textContent=me;
-
-document.getElementById(
-"oppScore"
-).textContent=opp;
-
-document.getElementById(
-"gameNumber"
-).textContent=game;
-
-
-document.getElementById(
-"meDisplayName"
-).textContent=
-document.getElementById(
-"meName"
-).value ||
-"自分";
-
-
-document.getElementById(
-"oppDisplayName"
-).textContent=
-document.getElementById(
-"oppName"
-).value ||
-"相手";
-
-
-const myWins =
-games.filter(
-g=>g.winner==="me"
-).length;
-
-const oppWins =
-games.filter(
-g=>g.winner==="opp"
-).length;
-
-
-document.getElementById(
-"gameScore"
-).textContent =
-`ゲームカウント ${myWins} - ${oppWins}`;
-
-
-document.getElementById(
-"maxWin"
-).textContent=maxWin;
-
-document.getElementById(
-"maxLose"
-).textContent=maxLose;
-
-document.getElementById(
-"endgameRate"
-).textContent=
-getEndgameRate();
-
-document.getElementById(
-"closeGame"
-).textContent=
-getCloseGame();
-
-
-renderCurrentReasons();
-
-renderCurrentIssue();
-
-}
-
-
-/* =========================================
-   現在の失点理由
-========================================= */
-
-function renderCurrentReasons(){
-
-const element =
-document.getElementById(
-"currentReasons"
+document.getElementById("oppName")
+.addEventListener(
+  "input",
+  function(){
+    update();
+    save();
+  }
 );
 
 
-if(reasons.length===0){
+/* =========================
+アプリ終了時保存
+========================= */
 
-element.textContent =
-"まだ失点していません。";
-
-return;
-
-}
-
-
-const counts={};
-
-
-reasons.forEach(reason=>{
-
-counts[reason] =
-(counts[reason] || 0)+1;
-
-});
-
-
-const sorted =
-Object.entries(
-counts
-).sort(
-(a,b)=>b[1]-a[1]
+window.addEventListener(
+  "pagehide",
+  function(){
+    save();
+  }
 );
 
 
-element.innerHTML =
-sorted.map(
-([reason,count])=>`
+document.addEventListener(
+  "visibilitychange",
+  function(){
 
-<div class="game-row">
+    if(
+      document.visibilityState==="hidden"
+    ){
+
+      save();
+
+    }
+
+  }
+);
+
+
+/* =========================
+起動
+========================= */
+
+load();
+
+</script>
+
+</body>
+</html>
