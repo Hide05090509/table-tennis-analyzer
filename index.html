@@ -34,7 +34,7 @@ h2{
 }
 
 h3{
-  margin:12px 0 8px;
+  margin:16px 0 10px;
   font-size:16px;
 }
 
@@ -83,6 +83,7 @@ button{
 .player-name{
   font-weight:bold;
   font-size:17px;
+  word-break:break-all;
 }
 
 .score{
@@ -150,7 +151,7 @@ button{
 }
 
 .hidden{
-  display:none;
+  display:none !important;
 }
 
 .notice{
@@ -201,6 +202,7 @@ button{
   justify-content:space-between;
   padding:6px 0;
   border-bottom:1px solid #ddd;
+  gap:10px;
 }
 
 .row:last-child{
@@ -239,11 +241,13 @@ button{
   margin-top:8px;
 }
 
-.result{
+.end-message{
+  background:#eef7ee;
+  border-radius:10px;
+  padding:12px;
+  margin-top:12px;
   text-align:center;
-  font-size:22px;
   font-weight:bold;
-  margin:10px 0;
 }
 </style>
 </head>
@@ -254,7 +258,6 @@ button{
 
 <h1>🏓 卓球 試合分析</h1>
 
-<!-- 選手名 -->
 <div class="card">
 
 <h2>選手名</h2>
@@ -276,19 +279,12 @@ button{
 ▶ 試合開始
 </button>
 
-<div
-  id="saved"
-  class="saved"
-></div>
+<div id="saved" class="saved"></div>
 
 </div>
 
 
-<!-- 試合エリア -->
-<div
-  id="matchArea"
-  class="hidden"
->
+<div id="matchArea" class="hidden">
 
 <div class="card">
 
@@ -296,10 +292,7 @@ button{
 第<span id="gameNumber">1</span>ゲーム
 </div>
 
-<div
-  id="gameCount"
-  class="game-count"
->
+<div id="gameCount" class="game-count">
 ゲームカウント 0 - 0
 </div>
 
@@ -366,10 +359,11 @@ button{
 ↩ 1点戻す
 </button>
 
+<div id="endMessage"></div>
+
 </div>
 
 
-<!-- 失点理由 -->
 <div
   id="reasonArea"
   class="card hidden"
@@ -430,7 +424,6 @@ button{
 </div>
 
 
-<!-- 現在の分析 -->
 <div class="card">
 
 <h2>📈 現在の分析</h2>
@@ -438,51 +431,23 @@ button{
 <div class="stats">
 
 <div class="stat">
-<div class="stat-title">
-最大連続得点
-</div>
-<div
-  id="maxWin"
-  class="stat-value"
->
-0
-</div>
+<div class="stat-title">最大連続得点</div>
+<div id="maxWin" class="stat-value">0</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-最大連続失点
-</div>
-<div
-  id="maxLose"
-  class="stat-value"
->
-0
-</div>
+<div class="stat-title">最大連続失点</div>
+<div id="maxLose" class="stat-value">0</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-終盤得点率
-</div>
-<div
-  id="lateRate"
-  class="stat-value"
->
--
-</div>
+<div class="stat-title">終盤得点率</div>
+<div id="lateRate" class="stat-value">-</div>
 </div>
 
 <div class="stat">
-<div class="stat-title">
-接戦
-</div>
-<div
-  id="closeGame"
-  class="stat-value"
->
--
-</div>
+<div class="stat-title">接戦</div>
+<div id="closeGame" class="stat-value">-</div>
 </div>
 
 </div>
@@ -492,7 +457,6 @@ button{
 </div>
 
 
-<!-- 失点理由 -->
 <div class="card">
 
 <h2>📝 失点理由</h2>
@@ -506,13 +470,11 @@ button{
 </div>
 
 
-<!-- 試合履歴 -->
 <div class="card">
 
 <h2>📚 試合履歴</h2>
 
-<div id="historyList">
-</div>
+<div id="historyList"></div>
 
 </div>
 
@@ -521,9 +483,9 @@ button{
 
 <script>
 
-/* ==================================================
+/* =====================================================
    基本データ
-================================================== */
+===================================================== */
 
 var me = 0;
 var opp = 0;
@@ -545,34 +507,28 @@ var matchStarted = false;
 
 var history = [];
 
+/*
+  localStorageに保存する名前
+  今までの履歴も同じ場所を使う
+*/
 var STORAGE = "table_tennis_analyzer_v3";
 
 
-/* ==================================================
+/* =====================================================
    保存
-================================================== */
+===================================================== */
 
 function save(){
 
   try{
 
-    var meNameElement =
-      document.getElementById("meName");
-
-    var oppNameElement =
-      document.getElementById("oppName");
-
     var data = {
 
       meName:
-        meNameElement
-        ? meNameElement.value
-        : "",
+        document.getElementById("meName").value,
 
       oppName:
-        oppNameElement
-        ? oppNameElement.value
-        : "",
+        document.getElementById("oppName").value,
 
       me:me,
 
@@ -590,6 +546,8 @@ function save(){
 
       maxLose:maxLose,
 
+      waitingReason:waitingReason,
+
       matchStarted:matchStarted,
 
       history:history
@@ -601,26 +559,21 @@ function save(){
       JSON.stringify(data)
     );
 
-    var saved =
-      document.getElementById("saved");
-
-    if(saved){
-      saved.textContent =
-        "💾 自動保存済み";
-    }
+    document.getElementById("saved").textContent =
+      "💾 自動保存済み";
 
   }catch(e){
 
-    console.log("保存エラー:",e);
+    console.log("保存エラー",e);
 
   }
 
 }
 
 
-/* ==================================================
+/* =====================================================
    読み込み
-================================================== */
+===================================================== */
 
 function load(){
 
@@ -670,6 +623,9 @@ function load(){
       maxLose =
         Number(data.maxLose) || 0;
 
+      waitingReason =
+        data.waitingReason === true;
+
       matchStarted =
         data.matchStarted === true;
 
@@ -682,11 +638,12 @@ function load(){
 
   }catch(e){
 
-    console.log("読み込みエラー:",e);
+    console.log("読み込みエラー",e);
 
     history = [];
 
   }
+
 
   renderHistory();
 
@@ -697,6 +654,15 @@ function load(){
       .classList
       .remove("hidden");
 
+    if(waitingReason){
+
+      document
+        .getElementById("reasonArea")
+        .classList
+        .remove("hidden");
+
+    }
+
   }
 
   update();
@@ -704,9 +670,9 @@ function load(){
 }
 
 
-/* ==================================================
+/* =====================================================
    試合開始
-================================================== */
+===================================================== */
 
 function startMatch(){
 
@@ -722,6 +688,7 @@ function startMatch(){
       .value
       .trim();
 
+
   if(!myName){
 
     alert(
@@ -731,6 +698,7 @@ function startMatch(){
     return;
 
   }
+
 
   if(!opponentName){
 
@@ -742,8 +710,8 @@ function startMatch(){
 
   }
 
-  me = 0;
 
+  me = 0;
   opp = 0;
 
   game = 1;
@@ -755,22 +723,28 @@ function startMatch(){
   reasons = [];
 
   maxWin = 0;
-
   maxLose = 0;
 
   waitingReason = false;
 
   matchStarted = true;
 
-  document
-    .getElementById("matchArea")
-    .classList
-    .remove("hidden");
 
   document
     .getElementById("reasonArea")
     .classList
     .add("hidden");
+
+  document
+    .getElementById("endMessage")
+    .innerHTML = "";
+
+
+  document
+    .getElementById("matchArea")
+    .classList
+    .remove("hidden");
+
 
   update();
 
@@ -779,15 +753,23 @@ function startMatch(){
 }
 
 
-/* ==================================================
+/* =====================================================
    得点
-================================================== */
+===================================================== */
 
 function point(player){
 
   if(!matchStarted){
+
     return;
+
   }
+
+
+  /*
+    相手の点を入れた直後は
+    必ず失点理由を選ぶ
+  */
 
   if(waitingReason){
 
@@ -800,80 +782,102 @@ function point(player){
   }
 
 
-  /* 自分の得点 */
+  /* ---------------------------------
+     自分の得点
+  --------------------------------- */
 
   if(player === "me"){
 
     me++;
 
     points.push({
-
       player:"me",
-
       reason:null
-
     });
+
+
+    calculateStats();
+
+    update();
+
+    save();
+
+
+    /*
+      ★重要
+      自分が11点以上かつ2点差なら
+      その場でゲーム終了
+    */
+
+    if(
+      me >= 11 &&
+      me - opp >= 2
+    ){
+
+      finishGame();
+
+      return;
+
+    }
+
+
+    return;
 
   }
 
 
-  /* 相手の得点 */
+  /* ---------------------------------
+     相手の得点
+  --------------------------------- */
 
-  else{
+  if(player === "opp"){
 
     opp++;
 
     points.push({
-
       player:"opp",
-
       reason:null
-
     });
 
+
     waitingReason = true;
+
 
     document
       .getElementById("reasonArea")
       .classList
       .remove("hidden");
 
-  }
 
+    calculateStats();
 
-  calculateStats();
+    update();
 
-  update();
+    save();
 
-  save();
-
-
-  /*
-    自分の得点の場合は
-    その場でゲーム終了判定
-  */
-
-  if(player === "me"){
-
-    checkEnd();
+    return;
 
   }
 
 }
 
 
-/* ==================================================
+/* =====================================================
    失点理由
-================================================== */
+===================================================== */
 
 function reason(value){
 
   if(!waitingReason){
+
     return;
+
   }
+
 
   var last =
     points[points.length - 1];
+
 
   if(
     last &&
@@ -886,12 +890,15 @@ function reason(value){
 
   }
 
+
   waitingReason = false;
+
 
   document
     .getElementById("reasonArea")
     .classList
     .add("hidden");
+
 
   calculateStats();
 
@@ -899,9 +906,10 @@ function reason(value){
 
   save();
 
+
   /*
-    相手の得点の場合は
-    理由を選んだあとに終了判定
+    相手の得点によって
+    ゲームが終わる場合
   */
 
   checkEnd();
@@ -909,61 +917,97 @@ function reason(value){
 }
 
 
-/* ==================================================
+/* =====================================================
    ゲーム終了判定
-================================================== */
+===================================================== */
 
 function checkEnd(){
 
+  if(!matchStarted){
+
+    return;
+
+  }
+
+
   /*
-    卓球のゲーム終了条件
-
-    ・11点以上
-    ・2点差以上
-
-    例：
-    11-9 → 終了
-    11-10 → 継続
-    12-10 → 終了
-    12-11 → 継続
-    13-11 → 終了
+    自分が勝った場合
   */
 
   if(
-    (me >= 11 || opp >= 11) &&
-    Math.abs(me - opp) >= 2
+    me >= 11 &&
+    me - opp >= 2
   ){
 
     finishGame();
+
+    return;
+
+  }
+
+
+  /*
+    相手が勝った場合
+  */
+
+  if(
+    opp >= 11 &&
+    opp - me >= 2
+  ){
+
+    finishGame();
+
+    return;
 
   }
 
 }
 
 
-/* ==================================================
+/* =====================================================
    ゲーム終了
-================================================== */
+===================================================== */
 
 function finishGame(){
 
   if(!matchStarted){
+
     return;
+
   }
 
 
   /*
-    ゲームの勝者
+    念のため
+    本当に終了条件を満たしているか確認
   */
 
-  var winner =
-    me > opp
-    ? "me"
-    : "opp";
+  if(
+    !(me >= 11 && me - opp >= 2) &&
+    !(opp >= 11 && opp - me >= 2)
+  ){
+
+    return;
+
+  }
+
+
+  var winner;
+
+
+  if(me > opp){
+
+    winner = "me";
+
+  }else{
+
+    winner = "opp";
+
+  }
 
 
   /*
-    終了したゲームを保存
+    現在のゲームを保存
   */
 
   games.push({
@@ -976,57 +1020,70 @@ function finishGame(){
 
     winner:winner,
 
-    points:
-      points.map(
-        function(p){
+    points:points.map(
+      function(p){
 
-          return {
+        return {
+          player:p.player,
+          reason:p.reason
+        };
 
-            player:p.player,
-
-            reason:p.reason
-
-          };
-
-        }
-      )
+      }
+    )
 
   });
 
 
   /*
-    現在のゲームカウント
+    ゲーム勝利数を計算
   */
 
-  var myWins =
-    games.filter(
-      function(g){
-
-        return g.winner === "me";
-
-      }
-    ).length;
+  var myWins = 0;
+  var oppWins = 0;
 
 
-  var oppWins =
-    games.filter(
-      function(g){
+  games.forEach(
+    function(g){
 
-        return g.winner === "opp";
+      if(g.winner === "me"){
+
+        myWins++;
 
       }
-    ).length;
+
+      if(g.winner === "opp"){
+
+        oppWins++;
+
+      }
+
+    }
+  );
+
+
+  /*
+    保存
+  */
+
+  save();
 
 
   /*
     ★重要
-    3ゲーム先取なら即試合終了
+    3ゲーム先取なら
+    ここで試合終了
   */
 
-  if(
-    myWins >= 3 ||
-    oppWins >= 3
-  ){
+  if(myWins >= 3){
+
+    finishMatch();
+
+    return;
+
+  }
+
+
+  if(oppWins >= 3){
 
     finishMatch();
 
@@ -1036,14 +1093,13 @@ function finishGame(){
 
 
   /*
-    まだ試合が続く場合
-    次のゲームへ
+    まだ試合継続
   */
 
   var finishedGame = game;
 
-  me = 0;
 
+  me = 0;
   opp = 0;
 
   points = [];
@@ -1051,12 +1107,22 @@ function finishGame(){
   reasons = [];
 
   maxWin = 0;
-
   maxLose = 0;
 
   waitingReason = false;
 
   game++;
+
+
+  document
+    .getElementById("endMessage")
+    .innerHTML = "";
+
+
+  document
+    .getElementById("reasonArea")
+    .classList
+    .add("hidden");
 
 
   update();
@@ -1065,27 +1131,25 @@ function finishGame(){
 
 
   alert(
-    "第" +
-    finishedGame +
-    "ゲーム終了！\n\n" +
-    "次は第" +
-    game +
-    "ゲームです。"
+    "第"+finishedGame+"ゲーム終了！\n\n"+
+    "ゲームカウント "+
+    myWins+" - "+oppWins+
+    "\n\n"+
+    "次は第"+game+"ゲームです。"
   );
 
 }
 
 
-/* ==================================================
+/* =====================================================
    試合終了
-================================================== */
+===================================================== */
 
 function finishMatch(){
 
-  if(!matchStarted){
-    return;
-  }
-
+  /*
+    試合終了時点の名前
+  */
 
   var myName =
     document
@@ -1104,28 +1168,31 @@ function finishMatch(){
     ゲーム勝利数
   */
 
-  var myWins =
-    games.filter(
-      function(g){
-
-        return g.winner === "me";
-
-      }
-    ).length;
+  var myWins = 0;
+  var oppWins = 0;
 
 
-  var oppWins =
-    games.filter(
-      function(g){
+  games.forEach(
+    function(g){
 
-        return g.winner === "opp";
+      if(g.winner === "me"){
+
+        myWins++;
 
       }
-    ).length;
+
+      if(g.winner === "opp"){
+
+        oppWins++;
+
+      }
+
+    }
+  );
 
 
   /*
-    失点理由集計
+    試合全体の失点理由
   */
 
   var reasonCount = {};
@@ -1134,13 +1201,12 @@ function finishMatch(){
   games.forEach(
     function(g){
 
-      if(
-        !Array.isArray(g.points)
-      ){
+      if(!Array.isArray(g.points)){
 
         return;
 
       }
+
 
       g.points.forEach(
         function(p){
@@ -1163,21 +1229,21 @@ function finishMatch(){
 
 
   /*
-    多い失点理由
+    一番多い失点理由
   */
 
   var sorted =
     Object.keys(reasonCount)
-    .sort(
-      function(a,b){
+      .sort(
+        function(a,b){
 
-        return (
-          reasonCount[b] -
-          reasonCount[a]
-        );
+          return (
+            reasonCount[b] -
+            reasonCount[a]
+          );
 
-      }
-    );
+        }
+      );
 
 
   var top = [];
@@ -1187,6 +1253,7 @@ function finishMatch(){
 
     var highest =
       reasonCount[sorted[0]];
+
 
     top =
       sorted.filter(
@@ -1204,7 +1271,7 @@ function finishMatch(){
 
 
   /*
-    試合履歴データ
+    履歴データ作成
   */
 
   var item = {
@@ -1213,7 +1280,7 @@ function finishMatch(){
 
     date:
       new Date()
-      .toLocaleString("ja-JP"),
+        .toLocaleString("ja-JP"),
 
     meName:myName,
 
@@ -1248,44 +1315,40 @@ function finishMatch(){
 
 
   /*
-    ★履歴を保存
+    ★試合履歴を保存
   */
 
   save();
 
 
   /*
-    画面にも表示
+    履歴を画面に表示
   */
 
   renderHistory();
 
 
   /*
-    結果を表示
+    試合終了メッセージ
   */
 
   alert(
-    "試合終了！\n\n" +
-    myName +
-    " " +
-    myWins +
-    " - " +
-    oppWins +
-    " " +
-    opponentName +
-    "\n\n" +
+    "試合終了！\n\n"+
+    myName+" "+
+    myWins+
+    " - "+
+    oppWins+" "+
+    opponentName+
+    "\n\n"+
     "📚 試合履歴に保存しました。"
   );
 
 
   /*
-    次の試合に備えて
-    現在の試合データをリセット
+    次の試合を始められる状態へ
   */
 
   me = 0;
-
   opp = 0;
 
   game = 1;
@@ -1297,7 +1360,6 @@ function finishMatch(){
   reasons = [];
 
   maxWin = 0;
-
   maxLose = 0;
 
   waitingReason = false;
@@ -1305,18 +1367,25 @@ function finishMatch(){
   matchStarted = false;
 
 
-  /*
-    試合画面を隠す
-  */
-
   document
     .getElementById("matchArea")
     .classList
     .add("hidden");
 
 
+  document
+    .getElementById("reasonArea")
+    .classList
+    .add("hidden");
+
+
+  document
+    .getElementById("endMessage")
+    .innerHTML = "";
+
+
   /*
-    リセット状態も保存
+    matchStarted=falseも保存
   */
 
   save();
@@ -1324,15 +1393,18 @@ function finishMatch(){
 }
 
 
-/* ==================================================
+/* =====================================================
    1点戻す
-================================================== */
+===================================================== */
 
 function undo(){
 
   if(!matchStarted){
+
     return;
+
   }
+
 
   if(points.length === 0){
 
@@ -1345,40 +1417,64 @@ function undo(){
   }
 
 
+  var last =
+    points[points.length - 1];
+
+
   /*
-    最後の得点を取り出す
+    最後が相手の点で
+    まだ理由選択中なら
+    そのまま戻す
   */
 
-  var last =
+  if(
+    last.player === "opp" &&
+    waitingReason
+  ){
+
     points.pop();
 
+    opp--;
 
-  /*
-    自分の得点だった場合
-  */
+    waitingReason = false;
 
-  if(last.player === "me"){
 
-    if(me > 0){
-      me--;
-    }
+    document
+      .getElementById("reasonArea")
+      .classList
+      .add("hidden");
+
+
+    calculateStats();
+
+    update();
+
+    save();
+
+    return;
 
   }
 
 
   /*
-    相手の得点だった場合
+    通常の1点戻し
   */
 
-  else{
+  points.pop();
 
-    if(opp > 0){
-      opp--;
-    }
+
+  if(last.player === "me"){
+
+    me--;
+
+  }else{
+
+    opp--;
 
 
     /*
-      対応する失点理由も削除
+      この失点に理由が付いていたら
+      reasonsからも1つ削除
     */
 
     if(last.reason){
@@ -1387,6 +1483,7 @@ function undo(){
         reasons.lastIndexOf(
           last.reason
         );
+
 
       if(index !== -1){
 
@@ -1420,18 +1517,16 @@ function undo(){
 }
 
 
-/* ==================================================
+/* =====================================================
    統計
-================================================== */
+===================================================== */
 
 function calculateStats(){
 
   var win = 0;
-
   var lose = 0;
 
   maxWin = 0;
-
   maxLose = 0;
 
 
@@ -1441,8 +1536,8 @@ function calculateStats(){
       if(p.player === "me"){
 
         win++;
-
         lose = 0;
+
 
         if(win > maxWin){
 
@@ -1450,13 +1545,11 @@ function calculateStats(){
 
         }
 
-      }
-
-      else{
+      }else{
 
         lose++;
-
         win = 0;
+
 
         if(lose > maxLose){
 
@@ -1472,9 +1565,9 @@ function calculateStats(){
 }
 
 
-/* ==================================================
+/* =====================================================
    終盤得点率
-================================================== */
+===================================================== */
 
 function lateRate(){
 
@@ -1486,11 +1579,9 @@ function lateRate(){
 
 
   var my = 0;
-
   var op = 0;
 
   var total = 0;
-
   var mine = 0;
 
 
@@ -1501,23 +1592,17 @@ function lateRate(){
 
         my++;
 
-      }
-
-      else{
+      }else{
 
         op++;
 
       }
 
 
-      /*
-        7点以上になった後の
-        得点を終盤として計算
-      */
-
       if(my >= 7 || op >= 7){
 
         total++;
+
 
         if(p.player === "me"){
 
@@ -1538,16 +1623,19 @@ function lateRate(){
   }
 
 
-  return Math.round(
-    mine / total * 100
-  ) + "%";
+  return (
+    Math.round(
+      mine / total * 100
+    )+
+    "%"
+  );
 
 }
 
 
-/* ==================================================
+/* =====================================================
    接戦
-================================================== */
+===================================================== */
 
 function closeGame(){
 
@@ -1559,11 +1647,9 @@ function closeGame(){
 
 
   var my = 0;
-
   var op = 0;
 
   var total = 0;
-
   var close = 0;
 
 
@@ -1574,9 +1660,7 @@ function closeGame(){
 
         my++;
 
-      }
-
-      else{
+      }else{
 
         op++;
 
@@ -1587,8 +1671,9 @@ function closeGame(){
 
         total++;
 
+
         if(
-          Math.abs(my - op) <= 2
+          Math.abs(my-op) <= 2
         ){
 
           close++;
@@ -1610,16 +1695,16 @@ function closeGame(){
 
   return (
     close / total >= 0.5
-  )
-  ? "接戦"
-  : "通常";
+    ? "接戦"
+    : "通常"
+  );
 
 }
 
 
-/* ==================================================
+/* =====================================================
    画面更新
-================================================== */
+===================================================== */
 
 function update(){
 
@@ -1656,36 +1741,35 @@ function update(){
       || "相手";
 
 
-  /*
-    ゲームカウント
-  */
-
-  var myWins =
-    games.filter(
-      function(g){
-
-        return g.winner === "me";
-
-      }
-    ).length;
+  var myWins = 0;
+  var oppWins = 0;
 
 
-  var oppWins =
-    games.filter(
-      function(g){
+  games.forEach(
+    function(g){
 
-        return g.winner === "opp";
+      if(g.winner === "me"){
+
+        myWins++;
 
       }
-    ).length;
+
+      if(g.winner === "opp"){
+
+        oppWins++;
+
+      }
+
+    }
+  );
 
 
   document
     .getElementById("gameCount")
     .textContent =
-      "ゲームカウント " +
-      myWins +
-      " - " +
+      "ゲームカウント "+
+      myWins+
+      " - "+
       oppWins;
 
 
@@ -1717,24 +1801,44 @@ function update(){
 
   renderIssue();
 
+
+  /*
+    3-0や3-1などで
+    試合終了状態になった場合の表示
+  */
+
+  if(
+    matchStarted &&
+    (
+      myWins >= 3 ||
+      oppWins >= 3
+    )
+  ){
+
+    document
+      .getElementById("endMessage")
+      .innerHTML =
+        '<div class="end-message">'+
+        '試合終了'+
+        '</div>';
+
+  }
+
 }
 
 
-/* ==================================================
+/* =====================================================
    失点理由表示
-================================================== */
+===================================================== */
 
 function renderReasons(){
 
   var element =
-    document.getElementById(
-      "reasonList"
-    );
+    document
+      .getElementById("reasonList");
 
 
-  if(
-    reasons.length === 0
-  ){
+  if(reasons.length === 0){
 
     element.textContent =
       "まだ失点していません。";
@@ -1764,10 +1868,7 @@ function renderReasons(){
     .sort(
       function(a,b){
 
-        return (
-          count[b] -
-          count[a]
-        );
+        return count[b] - count[a];
 
       }
     )
@@ -1775,13 +1876,13 @@ function renderReasons(){
       function(r){
 
         html +=
-          '<div class="row">' +
-          '<span>' +
-          escapeHTML(r) +
-          '</span>' +
-          '<strong>' +
-          count[r] +
-          '回</strong>' +
+          '<div class="row">'+
+          '<span>'+
+          escapeHTML(r)+
+          '</span>'+
+          '<strong>'+
+          count[r]+
+          '回</strong>'+
           '</div>';
 
       }
@@ -1793,21 +1894,18 @@ function renderReasons(){
 }
 
 
-/* ==================================================
-   課題
-================================================== */
+/* =====================================================
+   今回の課題
+===================================================== */
 
 function renderIssue(){
 
   var element =
-    document.getElementById(
-      "issue"
-    );
+    document
+      .getElementById("issue");
 
 
-  if(
-    reasons.length === 0
-  ){
+  if(reasons.length === 0){
 
     element.innerHTML = "";
 
@@ -1851,40 +1949,35 @@ function renderIssue(){
       .filter(
         function(r){
 
-          return (
-            count[r] === max
-          );
+          return count[r] === max;
 
         }
       );
 
 
   element.innerHTML =
-    '<div class="issue">' +
-    '<strong>🎯 今回の課題</strong>' +
-    '<p>' +
-    top
-      .map(escapeHTML)
-      .join("・") +
-    'が' +
-    max +
-    '回で最も多い失点理由です。' +
-    '</p>' +
+    '<div class="issue">'+
+    '<strong>🎯 今回の課題</strong>'+
+    '<p>'+
+    top.map(escapeHTML).join("・")+
+    'が'+
+    max+
+    '回で最も多い失点理由です。'+
+    '</p>'+
     '</div>';
 
 }
 
 
-/* ==================================================
+/* =====================================================
    試合履歴
-================================================== */
+===================================================== */
 
 function renderHistory(){
 
   var element =
-    document.getElementById(
-      "historyList"
-    );
+    document
+      .getElementById("historyList");
 
 
   if(
@@ -1893,8 +1986,8 @@ function renderHistory(){
   ){
 
     element.innerHTML =
-      '<div class="empty">' +
-      'まだ試合履歴がありません。' +
+      '<div class="empty">'+
+      'まだ試合履歴がありません。'+
       '</div>';
 
     return;
@@ -1923,9 +2016,7 @@ function renderHistory(){
       var gamesText = "";
 
 
-      if(
-        Array.isArray(item.games)
-      ){
+      if(Array.isArray(item.games)){
 
         gamesText =
           item.games
@@ -1933,8 +2024,8 @@ function renderHistory(){
               function(g){
 
                 return (
-                  g.me +
-                  "-" +
+                  g.me+
+                  "-"+
                   g.opp
                 );
 
@@ -1946,68 +2037,69 @@ function renderHistory(){
 
 
       html +=
-        '<div class="history-item">' +
 
-        '<div class="history-top">' +
+        '<div class="history-item">'+
 
-        '<div>' +
+        '<div class="history-top">'+
 
-        '<strong>' +
+        '<div>'+
+        '<strong>'+
         escapeHTML(
           item.meName
-        ) +
-        '</strong>' +
-
-        ' vs ' +
-
-        '<strong>' +
+        )+
+        '</strong>'+
+        ' vs '+
+        '<strong>'+
         escapeHTML(
           item.oppName
-        ) +
-        '</strong>' +
+        )+
+        '</strong>'+
+        '</div>'+
 
-        '</div>' +
+        '<div class="'+
+        cls+
+        '">'+
+        result+
+        '</div>'+
 
-        '<div class="' +
-        cls +
-        '">' +
-        result +
-        '</div>' +
+        '</div>'+
 
-        '</div>' +
+        '<div>'+
+        'ゲームカウント '+
+        item.myWins+
+        ' - '+
+        item.oppWins+
+        '</div>'+
 
-        '<div>' +
-        'ゲームカウント ' +
-        item.myWins +
-        ' - ' +
-        item.oppWins +
-        '</div>' +
+        '<div class="small">'+
+        escapeHTML(
+          item.date
+        )+
+        '</div>'+
 
-        '<div class="small">' +
-        escapeHTML(item.date) +
-        '</div>' +
+        '<div class="small">'+
+        'ゲーム：'+
+        escapeHTML(
+          gamesText
+        )+
+        '</div>'+
 
-        '<div class="small">' +
-        'ゲーム：' +
-        escapeHTML(gamesText) +
-        '</div>' +
+        '<button '+
+        'class="detail-btn" '+
+        'onclick="toggleDetail('+
+        item.id+
+        ')">'+
+        '📊 詳しく見る'+
+        '</button>'+
 
-        '<button ' +
-        'class="detail-btn" ' +
-        'onclick="toggleDetail(' +
-        Number(item.id) +
-        ')">' +
-        '📊 詳しく見る' +
-        '</button>' +
+        '<div id="detail'+
+        item.id+
+        '" '+
+        'class="detail hidden">'+
 
-        '<div id="detail' +
-        Number(item.id) +
-        '" ' +
-        'class="detail hidden">' +
+        makeDetail(item)+
 
-        makeDetail(item) +
-
-        '</div>' +
+        '</div>'+
 
         '</div>';
 
@@ -2020,9 +2112,9 @@ function renderHistory(){
 }
 
 
-/* ==================================================
+/* =====================================================
    履歴詳細
-================================================== */
+===================================================== */
 
 function makeDetail(item){
 
@@ -2042,20 +2134,17 @@ function makeDetail(item){
       function(g){
 
         html +=
-          '<div class="row">' +
-
-          '<span>' +
-          '第' +
-          g.game +
-          'ゲーム' +
-          '</span>' +
-
-          '<strong>' +
-          g.me +
-          " - " +
-          g.opp +
-          '</strong>' +
-
+          '<div class="row">'+
+          '<span>'+
+          '第'+
+          g.game+
+          'ゲーム'+
+          '</span>'+
+          '<strong>'+
+          g.me+
+          " - "+
+          g.opp+
+          '</strong>'+
           '</div>';
 
       }
@@ -2081,9 +2170,7 @@ function makeDetail(item){
     html +=
       "<p>記録なし</p>";
 
-  }
-
-  else{
+  }else{
 
     keys.sort(
       function(a,b){
@@ -2101,17 +2188,13 @@ function makeDetail(item){
       function(r){
 
         html +=
-          '<div class="row">' +
-
-          '<span>' +
-          escapeHTML(r) +
-          '</span>' +
-
-          '<strong>' +
-          reasonsObj[r] +
-          '回' +
-          '</strong>' +
-
+          '<div class="row">'+
+          '<span>'+
+          escapeHTML(r)+
+          '</span>'+
+          '<strong>'+
+          reasonsObj[r]+
+          '回</strong>'+
           '</div>';
 
       }
@@ -2126,32 +2209,26 @@ function makeDetail(item){
   ){
 
     html +=
-      '<div class="issue">' +
-
-      '<strong>🎯 試合の課題</strong>' +
-
-      '<p>' +
-
+      '<div class="issue">'+
+      '<strong>🎯 試合の課題</strong>'+
+      '<p>'+
       item.topReasons
         .map(escapeHTML)
-        .join("・") +
-
-      'が主な失点理由でした。' +
-
-      '</p>' +
-
+        .join("・")+
+      'が主な失点理由でした。'+
+      '</p>'+
       '</div>';
 
   }
 
 
   html +=
-    '<button ' +
-    'class="delete-btn" ' +
-    'onclick="deleteHistory(' +
-    Number(item.id) +
-    ')">' +
-    '🗑 この試合を削除' +
+    '<button '+
+    'class="delete-btn" '+
+    'onclick="deleteHistory('+
+    item.id+
+    ')">'+
+    '🗑 この試合を削除'+
     '</button>';
 
 
@@ -2160,15 +2237,15 @@ function makeDetail(item){
 }
 
 
-/* ==================================================
+/* =====================================================
    詳細開閉
-================================================== */
+===================================================== */
 
 function toggleDetail(id){
 
   var element =
     document.getElementById(
-      "detail" + id
+      "detail"+id
     );
 
 
@@ -2183,9 +2260,9 @@ function toggleDetail(id){
 }
 
 
-/* ==================================================
+/* =====================================================
    履歴削除
-================================================== */
+===================================================== */
 
 function deleteHistory(id){
 
@@ -2220,15 +2297,13 @@ function deleteHistory(id){
 }
 
 
-/* ==================================================
+/* =====================================================
    HTML安全処理
-================================================== */
+===================================================== */
 
 function escapeHTML(value){
 
-  return String(
-    value || ""
-  )
+  return String(value || "")
     .replace(
       /&/g,
       "&amp;"
@@ -2253,9 +2328,9 @@ function escapeHTML(value){
 }
 
 
-/* ==================================================
-   名前変更時保存
-================================================== */
+/* =====================================================
+   名前変更時
+===================================================== */
 
 document
   .getElementById("meName")
@@ -2285,9 +2360,9 @@ document
   );
 
 
-/* ==================================================
-   アプリ終了時保存
-================================================== */
+/* =====================================================
+   アプリを離れたときにも保存
+===================================================== */
 
 window.addEventListener(
   "pagehide",
@@ -2316,9 +2391,9 @@ document.addEventListener(
 );
 
 
-/* ==================================================
+/* =====================================================
    起動
-================================================== */
+===================================================== */
 
 load();
 
